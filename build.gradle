@@ -1,0 +1,111 @@
+repositories {
+   mavenCentral()
+   mavenLocal()
+   jcenter()
+}
+
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath "org.springframework.boot:spring-boot-gradle-plugin:2.2.6.RELEASE"
+  }
+}
+
+apply plugin: "io.spring.dependency-management"
+
+
+apply plugin: 'war'
+apply plugin: 'project-report'
+apply plugin: 'eclipse'
+apply plugin: "jacoco"
+apply plugin: 'project-report'
+apply plugin: 'maven-publish'
+apply plugin: 'org.springframework.boot'
+
+war {
+	group = 'amp.service.common'
+    archiveName = "amp-gcp-vision-api.war"
+	baseName = "amp-gcp-vision-api"
+	version = '0.0.1-SNAPSHOT'
+	description = """amp-gcp-vision-api"""
+	rootSpec.exclude("**/log4j2.properties")
+}
+
+configurations.all {
+	exclude group: "log4j", module:"log4j"
+	exclude group: "org.slf4j", module:"slf4j-simple"
+	exclude group: 'commons-logging', module: 'commons-logging'
+	exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    exclude module: 'logback-classic'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-gcp-dependencies:1.2.4.RELEASE"
+    }
+}
+
+dependencies {
+	
+	//Logging API
+	compile group: 'org.slf4j' , name: 'slf4j-api', version: "$sl4jVersion"
+	//Logging log4j2 implementation for logging API above
+	compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: "$log4j2Version"
+	//Logging log4j2 Commons Logging Bridge
+	compile group: 'org.apache.logging.log4j', name: 'log4j-jcl', version: "$log4j2Version"
+	
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter-vision', version:'1.2.4.RELEASE'
+    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-gcp-starter-storage
+	compile group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter-storage', version: '1.2.4.RELEASE'
+
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version:'2.2.6.RELEASE'
+    //compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version:'2.3.2.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version:'2.2.6.RELEASE'
+    //compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version:'2.3.2.RELEASE'
+    
+    // https://mvnrepository.com/artifact/com.google.cloud/google-cloud-storage
+	compile group: 'com.google.cloud', name: 'google-cloud-storage', version: '1.111.2'
+     
+    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-gcp-dependencies
+	//compile group: 'org.springframework.cloud', name: 'spring-cloud-gcp-dependencies', version: '1.2.4.RELEASE', ext: 'pom'
+
+	// https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox
+	compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.20'
+	
+	// https://mvnrepository.com/artifact/org.apache.pdfbox/fontbox
+	compile group: 'org.apache.pdfbox', name: 'fontbox', version: '2.0.20'
+	
+	
+	// https://mvnrepository.com/artifact/org.ghost4j/ghost4j
+	//compile group: 'org.ghost4j', name: 'ghost4j', version: '1.0.0'
+	
+    // https://mvnrepository.com/artifact/commons-io/commons-io
+	compile group: 'commons-io', name: 'commons-io', version: '2.5'
+    
+    // https://mvnrepository.com/artifact/org.awaitility/awaitility
+	testCompile group: 'org.awaitility', name: 'awaitility', version: '3.1.6'
+    
+    
+    testCompile "org.springframework.boot:spring-boot-starter-tomcat:$springBootVersion"
+    testCompile "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+    testCompile "junit:junit:$junitVersion"
+}
+
+configurations {
+    compile.exclude group: 'com.netflix'
+}
+
+test {
+    exclude '**/*'
+}
+
+defaultTasks 'clean', 'build','htmlDependencyReport', 'publishToMavenLocal', 'publish'
