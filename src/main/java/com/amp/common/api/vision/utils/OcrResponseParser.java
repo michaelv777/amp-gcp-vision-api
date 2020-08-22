@@ -133,6 +133,8 @@ public class OcrResponseParser
 		}
 		catch( Exception e )
 		{
+			LOG.error(e.getMessage(), e);
+			
 			return resPayload;
 		}
 	}
