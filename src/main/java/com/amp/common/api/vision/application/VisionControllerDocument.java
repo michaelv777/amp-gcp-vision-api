@@ -228,7 +228,7 @@ public class VisionControllerDocument
 		
 			        // Parse through the object to get the actual response for the first page of the input file.
 			        AnnotateImageResponse annotateImageResponse = annotateFileResponse.getResponses(0);
-		
+			       
 			        // Here we print the full text from the first page.
 			        // The response contains more information:
 			        // annotation/pages/blocks/paragraphs/words/symbols
@@ -244,15 +244,9 @@ public class VisionControllerDocument
 			        LOG.info(imageText);
 			        
 			        //resultData.add(imageText);
-			        
-			        //for (EntityAnnotation annotation : res.getLabelAnnotationsList()) 
-			        for (EntityAnnotation annotation : annotateImageResponse.getTextAnnotationsList())
+			        for ( Map.Entry<Descriptors.FieldDescriptor, Object> cannotations : 
+			        		annotateImageResponse.getFullTextAnnotation().getAllFields().entrySet() )
 			        {
-			        	String record =	StringUtils.EMPTY;
-			        	
-				        //annotation.getAllFields().forEach((k, v) ->
-			        	for( Map.Entry<Descriptors.FieldDescriptor, Object> cannotations : annotation.getAllFields().entrySet() )
-			        	{
 			        		//String record = String.format("%s : %s%n", k, v.toString());
 			        		Descriptors.FieldDescriptor k = cannotations.getKey();
 			        		Object v = cannotations.getValue();
@@ -260,13 +254,11 @@ public class VisionControllerDocument
 			        		String kv = String.format("%s : %s%n", k, v.toString());
 			        		LOG.debug(kv);
 			        		
-				          	record = String.format("%s", v.toString());
+			        		String record = String.format("%s", v.toString());
 				          		
 				          	resultData.add(record);
-				          	
-				          //});
-			        	}
 			        }
+			        
 			        
 			        /*
 			        String imageText = String.format("%s", annotateImageResponse.getFullTextAnnotation().getText());

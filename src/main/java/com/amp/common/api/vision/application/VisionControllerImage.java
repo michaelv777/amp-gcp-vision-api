@@ -43,10 +43,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.amp.common.api.vision.utils.OcrResponseParser;
 import com.google.cloud.vision.v1.AnnotateImageRequest;
 import com.google.cloud.vision.v1.AnnotateImageResponse;
 import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
 import com.google.cloud.vision.v1.Block;
+import com.google.cloud.vision.v1.BoundingPoly;
 import com.google.cloud.vision.v1.EntityAnnotation;
 import com.google.cloud.vision.v1.Feature;
 import com.google.cloud.vision.v1.Feature.Type;
@@ -58,7 +60,10 @@ import com.google.cloud.vision.v1.Page;
 import com.google.cloud.vision.v1.Paragraph;
 import com.google.cloud.vision.v1.Symbol;
 import com.google.cloud.vision.v1.TextAnnotation;
+import com.google.cloud.vision.v1.Vertex;
 import com.google.cloud.vision.v1.Word;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors;
 
@@ -290,7 +295,7 @@ public class VisionControllerImage
 	   */
 	  // [START vision_fulltext_detection]
 	  @GetMapping("/detectImageTextLocalExt")
-	  public List<String> detectImageTextLocalExt(
+	  public String detectImageTextLocalExt(
 			  @RequestParam("imagePath") String imagePath, 
 			  HttpServletRequest webRequest) throws IOException 
 	  {
@@ -298,15 +303,22 @@ public class VisionControllerImage
 			
 			FileInputStream fis = null;
 			
-			List<String> resultData = new LinkedList<String>();
-			  	
-		    List<AnnotateImageRequest> requests = new ArrayList<>();
+			//Gson gson = new GsonBuilder().setLenient().create();
+			
+			JsonObject resPayload = new JsonObject();
+			JsonArray resPayloadArray = new JsonArray();
+			resPayload.add("results", resPayloadArray);
+			//List<String> resultData = new LinkedList<String>();
 		    
 		    // Initialize client that will be used to send requests. This client only needs to be created
 		    // once, and can be reused for multiple requests. After completing all of your requests, call
 		    // the "close" method on the client to safely clean up any remaining background resources.
 		    try
 		    {
+		    	JsonObject pathObject = new JsonObject();
+		    	pathObject.addProperty("path", imagePath);
+		    	resPayload.add("file", pathObject);
+		    	
 		    	fis = new FileInputStream(imagePath);
 		    	
 		    	ByteString imgBytes = ByteString.readFrom(fis);
@@ -314,7 +326,8 @@ public class VisionControllerImage
 		    	Image img = Image.newBuilder().setContent(imgBytes).build();
 		    	
 		    	Feature feat = Feature.newBuilder().setType(Type.DOCUMENT_TEXT_DETECTION).build();
-			    
+		    	
+		    	List<AnnotateImageRequest> requests = new ArrayList<>();
 			    AnnotateImageRequest request =
 			        AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(img).build();
 			    requests.add(request);
@@ -327,26 +340,76 @@ public class VisionControllerImage
 		
 			    for (AnnotateImageResponse res : responses) 
 			    {
+			    	JsonObject resPayloadCurr = new OcrResponseParser().buildResponsePayload(res);
+			    	
+			    	resPayloadArray.add(resPayloadCurr);
+			    	/*
 					if (res.hasError()) 
 					{
 						LOG.error(String.format("Error: %s%n", res.getError().getMessage()));
 	
-						return resultData;
+						return StringUtils.EMPTY;
 					}
-	
+					
 					// For full list of available annotations, see http://g.co/cloud/vision/docs
 					TextAnnotation annotation = res.getFullTextAnnotation();
+					
 					for (Page page : annotation.getPagesList()) 
 					{
-						String pageText = "";
+						JsonArray blocksDataArray = new JsonArray();
+						resPayload.add("blocks", blocksDataArray);
+						
+						String pageText = ""; int blockIndex = 0;
 						for (Block block : page.getBlocksList()) 
 						{
-							String blockText = "";
+							JsonObject blockDataPayload = new JsonObject();
+							blocksDataArray.add(blockDataPayload);
+							
+							JsonArray blockDataArray = new JsonArray();
+							blockDataPayload.add("block" + String.valueOf(++blockIndex), blockDataArray);
+							
+							JsonObject paragraphsDataPayload = new JsonObject();
+							JsonArray paragraphsDataArray = new JsonArray();
+							paragraphsDataPayload.add("paragraphs", paragraphsDataArray);
+							blockDataArray.add(paragraphsDataPayload);
+							
+							String blockText = ""; int pIndex = 0;
 							for (Paragraph para : block.getParagraphsList())
 							{
-								String paraText = "";
+								JsonObject paragraphDataPayload = new JsonObject();
+								paragraphsDataArray.add(paragraphDataPayload);
+								
+								JsonArray paragraphDataArray = new JsonArray();
+								paragraphDataPayload.add("paragraph" + String.valueOf(++pIndex), paragraphDataArray);
+								
+								JsonObject woldsDataPayload = new JsonObject();
+								JsonArray wordsDataArray = new JsonArray();
+								woldsDataPayload.add("words", wordsDataArray);
+								paragraphDataArray.add(woldsDataPayload);
+								
+								String paraText = ""; int wordIndex = 0;
 								for (Word word : para.getWordsList()) 
 								{
+									JsonObject wordDataPayload = new JsonObject();
+									wordsDataArray.add(wordDataPayload);
+									
+									wordDataPayload.addProperty("confidence", word.getConfidence()); 
+									
+									JsonArray wordVertixesArray = new JsonArray();
+									wordDataPayload.add("vertices", wordVertixesArray);
+									
+									BoundingPoly bPoly = word.getBoundingBox();
+									
+									for( Vertex nVertex : bPoly.getVerticesList())
+									{
+										JsonObject bPolyVertexJsonObject = new JsonObject();
+										bPolyVertexJsonObject.addProperty("x", nVertex.getX());
+										bPolyVertexJsonObject.addProperty("y", nVertex.getY());
+										
+										wordVertixesArray.add(bPolyVertexJsonObject);
+									}
+									
+									
 									String wordText = "";
 									for (Symbol symbol : word.getSymbolsList())
 									{
@@ -355,35 +418,37 @@ public class VisionControllerImage
 										LOG.info(String.format("Symbol text: %s (confidence: %f)%n", symbol.getText(),
 												symbol.getConfidence()));
 									}
-	
+									
+									wordDataPayload.addProperty("text", wordText);
+									
 									LOG.info(String.format("Word text: %s (confidence: %f)%n%n", wordText,
 											word.getConfidence()));
 									paraText = String.format("%s %s", paraText, wordText);
 								}
-	
+								
 								// Output Example using Paragraph:
 								LOG.info("%nParagraph: %n" + paraText);
 								LOG.info(String.format("Paragraph Confidence: %f%n", para.getConfidence()));
 	
 								blockText = blockText + paraText;
 							}
-							pageText = pageText + blockText;
 							
-							resultData.add(blockText);
+							pageText = pageText + blockText;
 						}
 					}
 	
 					LOG.info("%nComplete annotation:");
 					LOG.info(annotation.getText());
+					*/
 			    }
-		      
-			    return resultData;
+			    
+			    return resPayload.toString();
 		    }
 		    catch( Exception e )
 		    {
 		    	LOG.error(e.getMessage(), e);
 		    	
-		    	return resultData;
+		    	throw e;
 		    }
 		    finally
 		    {

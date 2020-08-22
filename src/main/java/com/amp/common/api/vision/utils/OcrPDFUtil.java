@@ -18,10 +18,10 @@ import org.slf4j.LoggerFactory;
  * @author mveksler
  *
  */
-public class PDFUtil
+public class OcrPDFUtil
 {
 	private final static Logger LOG = 
-			LoggerFactory.getLogger(PDFUtil.class);
+			LoggerFactory.getLogger(OcrPDFUtil.class);
 	
 	
 	public class PdfInfo {
