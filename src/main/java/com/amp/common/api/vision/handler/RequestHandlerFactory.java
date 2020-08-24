@@ -42,8 +42,7 @@ public class RequestHandlerFactory
 			
 			if ( StringUtils.isEmpty(this.getcHandlerPackage()))
 			{
-				this.setcHandlerPackage(
-						"com.amp.common.api.vision.handler.impl");
+				this.setcHandlerPackage("com.amp.common.api.vision.handler.impl");
 			}
 			
 		}
@@ -54,8 +53,7 @@ public class RequestHandlerFactory
 	}
 	
 	//---
-	public RequestHandlerInterface getSearchHandler(
-			String ossObjectType) 
+	public RequestHandlerInterface getRequestHandler(String objectType) 
 	{
 		String cMethodName = "";
 		
@@ -71,7 +69,7 @@ public class RequestHandlerFactory
 	        cMethodName = ste.getMethodName();
 	        
 	        //---
-	        if ( ossObjectType == null )
+	        if ( objectType == null )
 	        {
 	        	return cRequestHandler;
 	        }
@@ -89,7 +87,7 @@ public class RequestHandlerFactory
 		        	
 		        	if ( cSearchHandler != null )
 		        	{
-			        	if ( cSearchHandler.objectType().equalsIgnoreCase(ossObjectType.toLowerCase()))
+			        	if ( cSearchHandler.objectType().equalsIgnoreCase(objectType.toLowerCase()))
 			        	{
 			        		cRequestHandler = (RequestHandlerInterface) cHandlerClass.newInstance();
 			        		
@@ -108,7 +106,7 @@ public class RequestHandlerFactory
 	        {
 	        	cRequestHandler = new RequestHandlerDefault();
 	        	
-	        	LOGGER.error(cMethodName + ":Default Handler is invoked!");
+	        	LOGGER.warn(cMethodName + ":Default Handler is invoked!");
 	        }
 	        
 	        LOGGER.info(cMethodName + ":Handler:" + cRequestHandler.getClass().getName());

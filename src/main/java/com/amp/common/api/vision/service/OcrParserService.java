@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amp.common.api.vision.dto.ReceiptDTO;
+import com.amp.common.api.vision.handler.RequestHandlerFactory;
+import com.amp.common.api.vision.handler.RequestHandlerInterface;
 import com.amp.common.api.vision.jpa.ReceiptConfigurationM;
 import com.amp.common.api.vision.jpa.VendorM;
 import com.google.cloud.vision.v1.AnnotateImageResponse;
@@ -85,7 +87,11 @@ public class OcrParserService
 			//---
 			if ( cRes )
 			{
+				RequestHandlerInterface requestHandler = 
+						new RequestHandlerFactory().getRequestHandler(vendorName);
 				
+				resObject = requestHandler.runProcessData(
+						receiptPayload, receiptAnnotation, vendorConfig);
 			}
 			
 			return resObject;

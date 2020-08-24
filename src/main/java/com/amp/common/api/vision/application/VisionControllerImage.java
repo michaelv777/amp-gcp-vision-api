@@ -315,8 +315,6 @@ public class VisionControllerImage
 			
 			List<ReceiptDTO> receiptObjects = new LinkedList<ReceiptDTO>();
 			
-			//Gson gson = new GsonBuilder().setLenient().create();
-			
 			JsonObject receiptsPayload = new JsonObject();
 			JsonArray receiptsPayloadArray = new JsonArray();
 			receiptsPayload.add("results", receiptsPayloadArray);

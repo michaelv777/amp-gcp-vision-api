@@ -3,19 +3,27 @@
  */
 package com.amp.common.api.vision.handler;
 
+import java.time.Instant;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amp.common.api.vision.dto.ReceiptDTO;
+import com.amp.common.api.vision.handler.receipt.ReceiptConfiguration;
+import com.amp.common.api.vision.handler.receipt.ReceiptDataInterface;
 import com.amp.common.api.vision.jpa.ReceiptConfigurationM;
 import com.google.cloud.vision.v1.TextAnnotation;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 
 /**
  * @author mveksler
  *
  */
-public abstract class RequestHandlerBase implements RequestHandlerInterface
+public abstract class RequestHandlerBase implements RequestHandlerInterface, ReceiptDataInterface
 {
 	private static final Logger LOGGER = 
 			LoggerFactory.getLogger(RequestHandlerBase.class);
@@ -48,11 +56,14 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface
 	        //---
 	        if ( cRes )
 	        {
-	    		
+	        	Gson gson = new GsonBuilder().setLenient().create();
+	        	
+	        	ReceiptConfiguration receiptConfig = gson.fromJson(
+	        		vendorConfig.getReceiptconfiguration(), ReceiptConfiguration.class); 
+	        	
+	        	receiptDTO.setPurchaseDate(this.getPurchaseDate(
+	        			receiptPayload, receiptConfig));
 	        }
-	        
-	        
-	        
 	        
 			return receiptDTO;
 		}
@@ -68,6 +79,35 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface
 		}
 	}
 
+	@Override
+	public Instant getPurchaseDate(
+			JsonObject receiptPayload, 
+			ReceiptConfiguration receiptConfig)
+	{
+		String cMethodName = "";
+		
+		Instant value = null;
+		
+		try
+		{
+			StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+	        StackTraceElement ste = stacktrace[1];
+	        cMethodName = ste.getMethodName();
+	    
+	        DocumentContext jsonContext = JsonPath.parse(receiptPayload.toString());
+	        
+	        String purchaseDate = jsonContext.read(receiptConfig.getPurchaseDate());
+	        
+	        return value;
+		}
+		catch( Exception e )
+		{
+			LOGGER.error(cMethodName + "::Exception:" + e.getMessage(), e);
+			
+			return null;
+		}
+	}
+	
 	@Override
 	public boolean releaseResources() 
 	{

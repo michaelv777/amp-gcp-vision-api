@@ -77,6 +77,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.reflections/reflections
 	compile group: 'org.reflections', name: 'reflections', version: '0.9.9-RC1'
 	
+	// https://mvnrepository.com/artifact/com.jayway.jsonpath/json-path
+	compile group: 'com.jayway.jsonpath', name: 'json-path', version: '2.4.0'
+	
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
 	compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.19'
      
