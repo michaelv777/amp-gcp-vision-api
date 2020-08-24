@@ -57,6 +57,8 @@ public class OcrParserService
 	{
 		ReceiptDTO resObject = new ReceiptDTO();
 		
+		ReceiptConfigurationM vendorConfig = null;
+				
 		boolean cRes = true;
 		
 		try
@@ -64,14 +66,14 @@ public class OcrParserService
 			String vendorName = this.getReceiptConfigurationVendor(receiptAnnotation);
 			if ( vendorName.equals(StringUtils.EMPTY))
 			{
-				LOG.error("vendorName NOT found!");
+				LOG.error("No vendorName found!");
 				
 				cRes = false;
 			}
 			//---
 			if ( cRes )
 			{
-				ReceiptConfigurationM vendorConfig = this.getReceiptConfigurationByVendor(vendorName);
+				vendorConfig = this.getReceiptConfigurationByVendor(vendorName);
 			
 				if ( null == vendorConfig )
 				{
