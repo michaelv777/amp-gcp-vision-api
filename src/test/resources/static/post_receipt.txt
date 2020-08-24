@@ -1,0 +1,58 @@
+{
+  "id": 0,
+  "purchaseDate": "2020-08-22T21:53:20.498Z",
+  "receiptItems": [
+    {
+      "id": 0,
+      "name": "string",
+      "price": 0,
+      "quantity": 0,
+      "receipt": {
+        "id": 0,
+        "purchaseDate": "2020-08-22T21:53:20.499Z",
+        "receiptItems": [
+          {
+            "id": 0,
+            "name": "string",
+            "price": 0,
+            "quantity": 0
+          }
+        ],
+        "salesTaxRate": 0,
+        "store": {
+          "address1": "string",
+          "address2": "string",
+          "city": "string",
+          "country": "string",
+          "id": 0,
+          "name": "string",
+          "postalCode": "string",
+          "province": "string",
+          "storeNumber": "string"
+        },
+        "storeReceiptId": "string",
+        "subtotal": 0,
+        "taxAmount": 0,
+        "total": 0,
+        "userId": "string"
+      }
+    }
+  ],
+  "salesTaxRate": 0,
+  "store": {
+    "address1": "string",
+    "address2": "string",
+    "city": "string",
+    "country": "string",
+    "id": 0,
+    "name": "string",
+    "postalCode": "string",
+    "province": "string",
+    "storeNumber": "string"
+  },
+  "storeReceiptId": "string",
+  "subtotal": 0,
+  "taxAmount": 0,
+  "total": 0,
+  "userId": "string"
+}
