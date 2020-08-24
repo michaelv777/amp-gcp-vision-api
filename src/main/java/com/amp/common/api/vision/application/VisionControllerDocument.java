@@ -13,7 +13,6 @@ import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -21,7 +20,6 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +36,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.amp.common.api.vision.dto.ReceiptDTO;
+import com.amp.common.api.vision.service.OcrParserService;
+import com.amp.common.api.vision.utils.OcrResponseParser;
 import com.amp.common.api.vision.utils.OcrStatusReporter;
 import com.google.api.client.util.ByteStreams;
 import com.google.api.gax.longrunning.OperationFuture;
@@ -56,7 +57,6 @@ import com.google.cloud.vision.v1.AnnotateImageResponse;
 import com.google.cloud.vision.v1.AsyncAnnotateFileRequest;
 import com.google.cloud.vision.v1.AsyncAnnotateFileResponse;
 import com.google.cloud.vision.v1.AsyncBatchAnnotateFilesResponse;
-import com.google.cloud.vision.v1.EntityAnnotation;
 import com.google.cloud.vision.v1.Feature;
 import com.google.cloud.vision.v1.GcsDestination;
 import com.google.cloud.vision.v1.GcsSource;
@@ -65,7 +65,8 @@ import com.google.cloud.vision.v1.InputConfig;
 import com.google.cloud.vision.v1.OperationMetadata;
 import com.google.cloud.vision.v1.OutputConfig;
 import com.google.cloud.vision.v1.TextAnnotation;
-import com.google.protobuf.Descriptors;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 
@@ -86,6 +87,16 @@ public class VisionControllerDocument
 	@Autowired
 	private DocumentOcrTemplate documentOcrTemplate;
 
+	@Autowired private OcrParserService ocrParserService;
+	
+	public OcrParserService getOcrParserService() {
+		return ocrParserService;
+	}
+
+	public void setOcrParserService(OcrParserService ocrParserService) {
+		this.ocrParserService = ocrParserService;
+	}
+	
 	private final OcrStatusReporter ocrStatusReporter;
 	
 	public VisionControllerDocument() 
@@ -117,7 +128,7 @@ public class VisionControllerDocument
 	   * @throws Exception on errors while closing the client.
 	   */
 	  @GetMapping("/detectDocumentTextGcs")
-	  public List<String> detectDocumentTextGcs(
+	  public String detectDocumentTextGcs(
 			  @RequestParam("gcsSourcePath") String gcsSourcePath, 
 			  @RequestParam("gcsDestinationPath") String gcsDestinationPath,
 			  HttpServletRequest webRequest)
@@ -125,12 +136,21 @@ public class VisionControllerDocument
 	  {
 		  ImageAnnotatorClient client = null;
 		  
-		  List<String> resultData = new LinkedList<String>();  
+		  JsonObject receiptsPayload = new JsonObject();
+		  JsonArray receiptsPayloadArray = new JsonArray();
+		  receiptsPayload.add("results", receiptsPayloadArray);
+			
+		  List<ReceiptDTO> receiptObjects = new LinkedList<ReceiptDTO>();
 		  // Initialize client that will be used to send requests. This client only needs to be created
 		  // once, and can be reused for multiple requests. After completing all of your requests, call
 		  // the "close" method on the client to safely clean up any remaining background resources.
 		  try
 		  {
+			  JsonObject pathObject = new JsonObject();
+			  pathObject.addProperty("gcsSourcePath", gcsSourcePath);
+			  pathObject.addProperty("gcsDestinationPath", gcsDestinationPath);
+			  receiptsPayload.add("file", pathObject);
+		    	
 			  client = ImageAnnotatorClient.create();
 					  
 			  List<AsyncAnnotateFileRequest> requests = new ArrayList<>();
@@ -227,60 +247,36 @@ public class VisionControllerDocument
 			        AnnotateFileResponse annotateFileResponse = builder.build();
 		
 			        // Parse through the object to get the actual response for the first page of the input file.
-			        AnnotateImageResponse annotateImageResponse = annotateFileResponse.getResponses(0);
+			        AnnotateImageResponse imageResponse = annotateFileResponse.getResponses(0);
 			       
 			        // Here we print the full text from the first page.
 			        // The response contains more information:
 			        // annotation/pages/blocks/paragraphs/words/symbols
 			        // including confidence score and bounding boxes
-			        if (annotateImageResponse.hasError()) 
-			        {
-			        	LOG.error("Error: %s%n", annotateImageResponse.getError().getMessage());
-			          
-			        	return resultData;
-			        }
+			        JsonObject resPayloadCurr = new OcrResponseParser().buildResponsePayload(imageResponse);
+			    	
+			        receiptsPayloadArray.add(resPayloadCurr);
 			        
-			        String imageText = String.format("%s%n", annotateImageResponse.getFullTextAnnotation().getText());
-			        LOG.info(imageText);
-			        
-			        //resultData.add(imageText);
-			        for ( Map.Entry<Descriptors.FieldDescriptor, Object> cannotations : 
-			        		annotateImageResponse.getFullTextAnnotation().getAllFields().entrySet() )
-			        {
-			        		//String record = String.format("%s : %s%n", k, v.toString());
-			        		Descriptors.FieldDescriptor k = cannotations.getKey();
-			        		Object v = cannotations.getValue();
-			        		
-			        		String kv = String.format("%s : %s%n", k, v.toString());
-			        		LOG.debug(kv);
-			        		
-			        		String record = String.format("%s", v.toString());
-				          		
-				          	resultData.add(record);
-			        }
-			        
-			        
-			        /*
-			        String imageText = String.format("%s", annotateImageResponse.getFullTextAnnotation().getText());
-			        
-			        LOG.info(imageText);
-			        
-			        resultData.add(imageText);
-			        resultData.add(System.lineSeparator());
-			        */
+			        TextAnnotation receiptAnnotation = imageResponse.getFullTextAnnotation();
+			    	
+			    	JsonObject receiptPayload = new OcrResponseParser().buildResponsePayload(
+			    			imageResponse);
+			    	
+			    	ReceiptDTO receiptObject = this.getOcrParserService().processVisionApiResponse(
+			    			receiptPayload, receiptAnnotation);
 		      } 
 		      else 
 		      {
 		    	  	LOG.info("No MATCH");
 		      }
 		      
-		      return resultData;
+		      return receiptsPayload.toString();
 		  }
 		  catch( Exception e )
 		  {
 			  LOG.error(e.getMessage(), e);
-			  
-			  return resultData;
+		    	
+			  throw e;
 		  }
 		  finally
 		    {

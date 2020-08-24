@@ -76,7 +76,7 @@ public class OcrResponseParser
 						woldsDataPayload.add("words", wordsDataArray);
 						paragraphDataArray.add(woldsDataPayload);
 						
-						String paraText = ""; int wordIndex = 0;
+						String paraText = ""; 
 						for (Word word : para.getWordsList()) 
 						{
 							JsonObject wordDataPayload = new JsonObject();

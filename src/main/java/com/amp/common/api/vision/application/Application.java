@@ -18,12 +18,24 @@ package com.amp.common.api.vision.application;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
 /** Entry point to running the Spring Boot application. */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = { "com.amp.common.api.vision"})
+@EntityScan(basePackages = {"com.amp.common.api.vision"})
 public class Application {
 
-  public static void main(String[] args) {
-    SpringApplication.run(Application.class, args);
-  }
+	@Configuration
+    //@Profile({ "default", "production" })
+    @PropertySource("classpath:" + VisionApiConstants.PROPERTY_FILE_NAME)
+	static class ProductionConfiguration {
+       
+        
+    }
+	
+	public static void main(String[] args) {
+	    SpringApplication.run(Application.class, args);
+	}
 }
