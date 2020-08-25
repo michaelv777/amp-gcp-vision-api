@@ -18,6 +18,7 @@ package com.amp.common.api.vision.application.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -26,6 +27,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -40,22 +43,39 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.cloud.vision.v1.ImageAnnotatorClient;
-
+import com.amp.common.api.vision.handler.receipt.ReceiptConfiguration;
 import com.google.cloud.vision.v1.AnnotateImageRequest;
 import com.google.cloud.vision.v1.AnnotateImageResponse;
 import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
 import com.google.cloud.vision.v1.EntityAnnotation;
 import com.google.cloud.vision.v1.Feature;
 import com.google.cloud.vision.v1.Feature.Type;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.cloud.vision.v1.Image;
 
 import com.google.protobuf.ByteString;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.InvalidPathException;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
+
+import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 /**
@@ -161,7 +181,7 @@ public class VisionControllerImageTest {
 				});
 	}
 	
-	//@Ignore
+	@Ignore
 	@Test
 	public void testParseImageText() throws Exception {
 		// Initialize client that will be used to send requests. This client only needs to be created
@@ -213,5 +233,204 @@ public class VisionControllerImageTest {
 		        }
 	    	}
 	    }
+	}
+	
+	//@Test
+	public void testParseMetadataPayloadText() throws Exception
+	{
+		try
+		{
+			String fileName = "static/homedepot_parser_metadata.json";
+			
+			ClassLoader classLoader = getClass().getClassLoader();
+	    	File file = new File(classLoader.getResource(fileName).getFile());
+	    	String absolutePath = file.getAbsolutePath();
+	    	
+	        String parserMetadata = new String(Files.readAllBytes(Paths.get(absolutePath)));
+	        
+	        Gson gson = new GsonBuilder().setLenient().create();
+        	
+        	ReceiptConfiguration receiptConfig = gson.fromJson(
+        			parserMetadata, ReceiptConfiguration.class);
+        	
+        	assertTrue(receiptConfig != null);
+		}
+		catch(PathNotFoundException e) 
+		{
+			System.err.println( e.getMessage());
+		}
+		catch (ClassCastException e) 
+		{
+			  System.err.println( e.getMessage());
+		} 
+		catch(InvalidPathException e) 
+		{
+			  System.err.println( e.getMessage());
+		}
+		catch( Exception e)
+		{
+			System.err.println( e.getMessage());
+		}
+	}
+	        
+	//@Ignore
+	@Test
+	public void testParsePayloadText() throws Exception
+	{
+		try
+		{
+			String payloadFileName  = "static/homedeport_payload1.json";
+			String metadataFileName = "static/homedepot_parser_metadata.json";
+			
+			ClassLoader classLoader = getClass().getClassLoader();
+			
+	    	File 		   filePayload = new File(classLoader.getResource(payloadFileName).getFile());
+	    	String absolutePathPayload = filePayload.getAbsolutePath();
+	        String      payloadContent = new String(Files.readAllBytes(Paths.get(absolutePathPayload)));
+	        JSONObject  receiptPayload = new JSONObject(payloadContent);
+	        
+	        DocumentContext jsonContext = JsonPath.
+	        		using(Configuration.defaultConfiguration()).
+	        		parse(receiptPayload.toString());
+	        //---
+	        File 		   fileMetadata = new File(classLoader.getResource(metadataFileName).getFile());
+	    	String absolutePathMetadata = fileMetadata.getAbsolutePath();
+	        String      metadataContent = new String(Files.readAllBytes(Paths.get(absolutePathMetadata)));
+	        
+	        Gson gson = new GsonBuilder().setLenient().create();
+	        
+        	ReceiptConfiguration receiptConfig = gson.fromJson(
+        			metadataContent, ReceiptConfiguration.class);
+	        //---
+	        
+	        //---purchaseDate
+	        String purchaseDateValue = StringUtils.EMPTY;
+	        String purchaseTimeValue = StringUtils.EMPTY;
+	        String purchaseAMPMValue = StringUtils.EMPTY;
+	        String purchaseDateTimeValue = StringUtils.EMPTY;
+	        String purchaseDateFormat = "dd/MM/yy hh:mm a";
+	        
+	        try
+	        {
+	        	net.minidev.json.JSONArray purchaseDate = 
+	        		jsonContext.read(receiptConfig.getPurchaseDateTime().getPurchaseDate()); //("$.blocks[3]..paragraphs[0]..words[0].text");
+	        	
+	        	if ( purchaseDate.size() >= 1)
+		        {
+		        	purchaseDateValue = (String)purchaseDate.get(0);
+		        }
+	        }
+	        catch( Exception e ){}
+	        
+	        try
+	        {
+	        	net.minidev.json.JSONArray purchaseTime = 
+	        		jsonContext.read(receiptConfig.getPurchaseDateTime().getPurchaseTime());//("$.blocks[4]..paragraphs[0]..words[0].text");
+	        	
+	        	if ( purchaseTime.size() >= 1)
+		        {
+	        		purchaseTimeValue = (String)purchaseTime.get(0);
+		        }
+	        }
+	        catch( Exception e ) {}
+	        
+	        try
+	        {
+	        	net.minidev.json.JSONArray purchaseAMPM = 
+	        		jsonContext.read(receiptConfig.getPurchaseDateTime().getPurchaseAMPM());//("$.blocks[4]..paragraphs[0]..words[1].text");
+	        	
+	        	if ( purchaseAMPM.size() >= 1)
+		        {
+	        		purchaseAMPMValue = (String)purchaseAMPM.get(0);
+		        }
+	        
+	        }
+	        catch( Exception e ){}
+	        
+	        try
+	        {
+	        	if ( !purchaseDateValue.equals(StringUtils.EMPTY))
+	        	{
+	        		purchaseDateTimeValue += purchaseDateValue;
+	        	}
+	        	
+	        	if ( !purchaseTimeValue.equals(StringUtils.EMPTY))
+	        	{
+	        		purchaseDateTimeValue += " ";
+	        		purchaseDateTimeValue += purchaseTimeValue;
+	        	}
+	        	
+	        	if ( !purchaseAMPMValue.equals(StringUtils.EMPTY))
+	        	{
+	        		purchaseDateTimeValue += " ";
+	        		purchaseDateTimeValue += purchaseAMPMValue;
+	        	}
+	        	
+	        	Date date = new SimpleDateFormat(purchaseDateFormat).parse(purchaseDateTimeValue);
+	        
+	        	Instant value = date.toInstant();
+	        	
+	        	System.out.println( value);
+	        }
+	        catch( Exception e ) {}
+	        
+	        //---subtotal
+	        net.minidev.json.JSONArray subtotalArray = 
+	        		jsonContext.read(receiptConfig.getSubtotal());//("$.blocks[8]..paragraphs[1]..words[0].text");
+	        
+	        if ( subtotalArray.size() >= 1 )
+	        {
+		        String value = (String)subtotalArray.get(0);
+	        	
+	        	System.out.println( value);
+	        }
+	        
+	        //---total
+	        net.minidev.json.JSONArray totalArray = 
+	        		jsonContext.read(receiptConfig.getTotal());//("$.blocks[8]..paragraphs[4]..words[0].text");
+	        
+	        if ( totalArray.size() >= 1 )
+	        {
+		        String value = (String)totalArray.get(0);
+	        	
+	        	System.out.println( value);
+	        }
+	        
+	        //---tax amount
+	        net.minidev.json.JSONArray taxAmountArray = 
+	        		jsonContext.read(receiptConfig.getTaxAmount());//("$.blocks[8]..paragraphs[3]..words[0].text");
+	        
+	        if ( taxAmountArray.size() >= 1 )
+	        {
+		        String value = (String)taxAmountArray.get(0);
+	        	
+	        	System.out.println( value);
+	        }
+	        
+	        //---items data
+	        for( String itemsDetailsPath : receiptConfig.getItemsData().getItemsDetails())
+	        {
+		        net.minidev.json.JSONArray itemsCodesArray = jsonContext.read(itemsDetailsPath);
+		        
+		        System.out.println( "");
+	        }
+		}
+		catch(PathNotFoundException e) 
+		{
+			System.err.println( e.getMessage());
+		}
+		catch (ClassCastException e) 
+		{
+			  System.err.println( e.getMessage());
+		} 
+		catch(InvalidPathException e) 
+		{
+			  System.err.println( e.getMessage());
+		}
+		catch( Exception e)
+		{
+			System.err.println( e.getMessage());
+		}
+		
 	}
 }

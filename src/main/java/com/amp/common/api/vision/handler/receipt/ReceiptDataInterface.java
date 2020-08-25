@@ -5,7 +5,7 @@ package com.amp.common.api.vision.handler.receipt;
 
 import java.time.Instant;
 
-import com.google.gson.JsonObject;
+import com.jayway.jsonpath.DocumentContext;
 
 /**
  * @author mveksler
@@ -14,6 +14,6 @@ import com.google.gson.JsonObject;
 public interface ReceiptDataInterface 
 {
 	public Instant getPurchaseDate(
-			JsonObject receiptPayload, 
+			DocumentContext jsonContext,
 			ReceiptConfiguration receiptConfig);
 }

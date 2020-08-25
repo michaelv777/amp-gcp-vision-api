@@ -253,14 +253,11 @@ public class VisionControllerDocument
 			        // The response contains more information:
 			        // annotation/pages/blocks/paragraphs/words/symbols
 			        // including confidence score and bounding boxes
-			        JsonObject resPayloadCurr = new OcrResponseParser().buildResponsePayload(imageResponse);
+			        JsonObject receiptPayload = new OcrResponseParser().buildResponsePayload(imageResponse);
 			    	
-			        receiptsPayloadArray.add(resPayloadCurr);
+			        receiptsPayloadArray.add(receiptPayload);
 			        
 			        TextAnnotation receiptAnnotation = imageResponse.getFullTextAnnotation();
-			    	
-			    	JsonObject receiptPayload = new OcrResponseParser().buildResponsePayload(
-			    			imageResponse);
 			    	
 			    	ReceiptDTO receiptObject = this.getOcrParserService().processVisionApiResponse(
 			    			receiptPayload, receiptAnnotation);

@@ -21,53 +21,93 @@ public class ReceiptConfiguration implements Serializable
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	@SerializedName("purchaseDate")
+	@SerializedName("purchaseDateTime")
 	@Expose
-	public String purchaseDate = StringUtils.EMPTY;
+	public DateTimeConfiguration purchaseDateTime;
 
-	public String getPurchaseDate() {
-		return purchaseDate;
-	}
-
-	public void setPurchaseDate(String purchaseDate) {
-		this.purchaseDate = purchaseDate;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((purchaseDate == null) ? 0 : purchaseDate.hashCode());
-		return result;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof ReceiptConfiguration)) {
-			return false;
-		}
-		ReceiptConfiguration other = (ReceiptConfiguration) obj;
-		if (purchaseDate == null) {
-			if (other.purchaseDate != null) {
-				return false;
-			}
-		} else if (!purchaseDate.equals(other.purchaseDate)) {
-			return false;
-		}
-		return true;
-	}
+	@SerializedName("itemsData")
+	@Expose
+	public ItemsDataConfiguration itemsData;
 	
+	@SerializedName("subtotal")
+	@Expose
+	public String subtotal = StringUtils.EMPTY;
+
+	@SerializedName("total")
+	@Expose
+	public String total = StringUtils.EMPTY;
 	
+	@SerializedName("taxAmount")
+	@Expose
+	public String taxAmount = StringUtils.EMPTY;
+	
+	/**
+	 * @return the purchaseDateTime
+	 */
+	public DateTimeConfiguration getPurchaseDateTime() {
+		return purchaseDateTime;
+	}
+
+	/**
+	 * @param purchaseDateTime the purchaseDateTime to set
+	 */
+	public void setPurchaseDateTime(DateTimeConfiguration purchaseDateTime) {
+		this.purchaseDateTime = purchaseDateTime;
+	}
+
+	/**
+	 * @return the itemsData
+	 */
+	public ItemsDataConfiguration getItemsData() {
+		return itemsData;
+	}
+
+	/**
+	 * @param itemsData the itemsData to set
+	 */
+	public void setItemsData(ItemsDataConfiguration itemsData) {
+		this.itemsData = itemsData;
+	}
+
+	/**
+	 * @return the subtotal
+	 */
+	public String getSubtotal() {
+		return subtotal;
+	}
+
+	/**
+	 * @param subtotal the subtotal to set
+	 */
+	public void setSubtotal(String subtotal) {
+		this.subtotal = subtotal;
+	}
+
+	/**
+	 * @return the total
+	 */
+	public String getTotal() {
+		return total;
+	}
+
+	/**
+	 * @param total the total to set
+	 */
+	public void setTotal(String total) {
+		this.total = total;
+	}
+
+	/**
+	 * @return the taxAmount
+	 */
+	public String getTaxAmount() {
+		return taxAmount;
+	}
+
+	/**
+	 * @param taxAmount the taxAmount to set
+	 */
+	public void setTaxAmount(String taxAmount) {
+		this.taxAmount = taxAmount;
+	}
 }

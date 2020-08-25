@@ -1,0 +1,17 @@
+{
+  "purchaseDateTime":
+    {
+      "purchaseDate": "$.blocks[3]..paragraphs[0]..words[0].text",
+      "purchaseTime": "$.blocks[4]..paragraphs[0]..words[0].text",
+      "purchaseAMPM": "$.blocks[4]..paragraphs[0]..words[1].text",
+      "purchaseDateFormat": "dd/MM/yy hh:mm a"
+    },
+  "subtotal": "$.blocks[8]..paragraphs[1]..words[0].text",
+  "total": "$.blocks[8]..paragraphs[3]..words[1].text",
+  "taxAmount": "$.blocks[8]..paragraphs[2]..words[0].text",
+  "itemsData": 
+    {
+      "itemsDetails": ["$.blocks[6]..paragraphs[0]..words[*].text"],
+      "itemsPrices": ["$.blocks[7]..paragraphs[0]..words[*].text"]
+    }
+}

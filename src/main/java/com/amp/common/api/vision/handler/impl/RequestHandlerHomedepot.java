@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amp.common.api.vision.dto.ReceiptDTO;
-import com.amp.common.api.vision.handler.HandlerObjectName;
 import com.amp.common.api.vision.handler.RequestHandlerBase;
 import com.amp.common.api.vision.jpa.ReceiptConfigurationM;
 import com.google.cloud.vision.v1.TextAnnotation;
@@ -17,13 +16,12 @@ import com.google.gson.JsonObject;
  * @author MVEKSLER
  *
  */
-@HandlerObjectName(objectType = "homedepot")
-public class RequestHandlerDefault extends RequestHandlerBase 
+public class RequestHandlerHomedepot extends RequestHandlerBase 
 {
 	private static final Logger LOGGER = 
-			LoggerFactory.getLogger(RequestHandlerDefault.class);
+			LoggerFactory.getLogger(RequestHandlerHomedepot.class);
 	
-	public RequestHandlerDefault()
+	public RequestHandlerHomedepot()
 	{
 		super();
 		

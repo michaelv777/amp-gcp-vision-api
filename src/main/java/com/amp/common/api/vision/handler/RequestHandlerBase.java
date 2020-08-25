@@ -3,8 +3,11 @@
  */
 package com.amp.common.api.vision.handler;
 
+import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +19,7 @@ import com.google.cloud.vision.v1.TextAnnotation;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 
@@ -56,13 +60,17 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, Rec
 	        //---
 	        if ( cRes )
 	        {
+	        	DocumentContext jsonContext = JsonPath.
+		        		using(Configuration.defaultConfiguration()).
+		        		parse(receiptPayload.toString());
+	        	
 	        	Gson gson = new GsonBuilder().setLenient().create();
 	        	
 	        	ReceiptConfiguration receiptConfig = gson.fromJson(
 	        		vendorConfig.getReceiptconfiguration(), ReceiptConfiguration.class); 
 	        	
 	        	receiptDTO.setPurchaseDate(this.getPurchaseDate(
-	        			receiptPayload, receiptConfig));
+	        			jsonContext, receiptConfig));
 	        }
 	        
 			return receiptDTO;
@@ -81,23 +89,85 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, Rec
 
 	@Override
 	public Instant getPurchaseDate(
-			JsonObject receiptPayload, 
+			DocumentContext jsonContext, 
 			ReceiptConfiguration receiptConfig)
 	{
 		String cMethodName = "";
-		
-		Instant value = null;
 		
 		try
 		{
 			StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
 	        StackTraceElement ste = stacktrace[1];
 	        cMethodName = ste.getMethodName();
-	    
-	        DocumentContext jsonContext = JsonPath.parse(receiptPayload.toString());
 	        
-	        String purchaseDate = jsonContext.read(receiptConfig.getPurchaseDate());
+	        String purchaseDateValue = StringUtils.EMPTY;
+	        String purchaseTimeValue = StringUtils.EMPTY;
+	        String purchaseAMPMValue = StringUtils.EMPTY;
+	        String purchaseDateTimeValue = StringUtils.EMPTY;
+	        String purchaseDateFormat = receiptConfig.getPurchaseDateTime().getPurchaseDateFormat();
 	        
+        	net.minidev.json.JSONArray purchaseDate = 
+        		jsonContext.read(receiptConfig.getPurchaseDateTime().getPurchaseDate()); 
+        	
+        	if ( purchaseDate.size() >= 1)
+	        {
+	        	purchaseDateValue = (String)purchaseDate.get(0);
+	        }
+       
+        	net.minidev.json.JSONArray purchaseTime = 
+        		jsonContext.read(receiptConfig.getPurchaseDateTime().getPurchaseTime());
+        	
+        	if ( purchaseTime.size() >= 1)
+	        {
+        		purchaseTimeValue = (String)purchaseTime.get(0);
+	        }
+       
+        	net.minidev.json.JSONArray purchaseAMPM = 
+        		jsonContext.read(receiptConfig.getPurchaseDateTime().getPurchaseAMPM());
+        	
+        	if ( purchaseAMPM.size() >= 1)
+	        {
+        		purchaseAMPMValue = (String)purchaseAMPM.get(0);
+	        }
+        
+       
+        	if ( !purchaseDateValue.equals(StringUtils.EMPTY))
+        	{
+        		purchaseDateTimeValue += purchaseDateValue;
+        	}
+        	
+        	if ( !purchaseTimeValue.equals(StringUtils.EMPTY))
+        	{
+        		purchaseDateTimeValue += " ";
+        		purchaseDateTimeValue += purchaseTimeValue;
+        	}
+        	
+        	if ( !purchaseAMPMValue.equals(StringUtils.EMPTY))
+        	{
+        		purchaseDateTimeValue += " ";
+        		purchaseDateTimeValue += purchaseAMPMValue;
+        	}
+        	
+        	Date date = new SimpleDateFormat(purchaseDateFormat).parse(purchaseDateTimeValue);
+        
+        	Instant value = date.toInstant();
+        	
+        	LOGGER.debug(value.toString());
+	       
+	        
+	        /*
+	        net.minidev.json.JSONArray purchaseDate = jsonContext.read(
+	        		receiptConfig.getPurchaseDateTime().getPurchaseDate());
+	        
+	        if ( purchaseDate.size() >= 1 )
+	        {
+	        	String purchaseDateValue = (String)purchaseDate.get(0);
+	        	
+	        	LocalDate date = LocalDate.parse(purchaseDateValue);
+	        
+	        	value = date.atStartOfDay(ZoneId.of("Etc/UTC")).toInstant();
+	        }
+	        */
 	        return value;
 		}
 		catch( Exception e )
