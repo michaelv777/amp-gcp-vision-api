@@ -279,7 +279,7 @@ public class VisionControllerImageTest {
 	{
 		try
 		{
-			String payloadFileName  = "static/homedeport_payload1.json";
+			String payloadFileName  = "static/homedepot_payload1.json";
 			String metadataFileName = "static/homedepot_parser_metadata.json";
 			
 			ClassLoader classLoader = getClass().getClassLoader();

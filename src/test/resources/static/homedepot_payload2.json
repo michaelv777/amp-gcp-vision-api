@@ -1,0 +1,982 @@
+{
+	"blocks": [
+		{
+			"block1": [
+				{
+					"paragraphs": [
+						{
+							"paragraph1": [
+								{
+									"words": [
+										{
+											"confidence": 0.72,
+											"vertices": [],
+											"text": "OM"
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"block2": [
+				{
+					"paragraphs": [
+						{
+							"paragraph1": [
+								{
+									"words": [
+										{
+											"confidence": 0.98,
+											"vertices": [],
+											"text": "How"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "doers"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "get"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "more"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "done"
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"block3": [
+				{
+					"paragraphs": [
+						{
+							"paragraph1": [
+								{
+									"words": [
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "17850"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "Yonge"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "Street"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "Newmarket"
+										},
+										{
+											"confidence": 0.97,
+											"vertices": [],
+											"text": ","
+										},
+										{
+											"confidence": 0.96,
+											"vertices": [],
+											"text": "ONT"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "DENES"
+										},
+										{
+											"confidence": 0.97,
+											"vertices": [],
+											"text": "INCZE"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "STORE"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "MGA"
+										},
+										{
+											"confidence": 0.98,
+											"vertices": [],
+											"text": "(905)898-0090"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "7030"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "00007"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "38369"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "24/08/20"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "06:08"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "PM"
+										},
+										{
+											"confidence": 0.98,
+											"vertices": [],
+											"text": "SALE"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "CASHIER"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "GREGORY"
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"block4": [
+				{
+					"paragraphs": [
+						{
+							"paragraph1": [
+								{
+									"words": [
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "629177200008"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "Sod"
+										},
+										{
+											"confidence": 0.9,
+											"vertices": [],
+											"text": "Roll"
+										},
+										{
+											"confidence": 0.95,
+											"vertices": [],
+											"text": "PBS"
+										},
+										{
+											"confidence": 0.96,
+											"vertices": [],
+											"text": "<A>"
+										}
+									]
+								}
+							]
+						},
+						{
+							"paragraph2": [
+								{
+									"words": [
+										{
+											"confidence": 0.92,
+											"vertices": [],
+											"text": "13@6.69"
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"block5": [
+				{
+					"paragraphs": [
+						{
+							"paragraph1": [
+								{
+									"words": [
+										{
+											"confidence": 0.9,
+											"vertices": [],
+											"text": "86.97"
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"block6": [
+				{
+					"paragraphs": [
+						{
+							"paragraph1": [
+								{
+									"words": [
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "SUBTOTAL"
+										}
+									]
+								}
+							]
+						},
+						{
+							"paragraph2": [
+								{
+									"words": [
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "86.97"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "GST"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "/"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "HST"
+										}
+									]
+								}
+							]
+						},
+						{
+							"paragraph3": [
+								{
+									"words": [
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "11.31"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "TOTAL"
+										}
+									]
+								}
+							]
+						},
+						{
+							"paragraph4": [
+								{
+									"words": [
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "$"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "98.28"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "XXXXXXXXXXXX7432"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "DEBIT"
+										}
+									]
+								}
+							]
+						},
+						{
+							"paragraph5": [
+								{
+									"words": [
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "CAD"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "$"
+										},
+										{
+											"confidence": 0.97,
+											"vertices": [],
+											"text": "98.28"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "Contactless"
+										},
+										{
+											"confidence": 0.98,
+											"vertices": [],
+											"text": "AID"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "A0000002771010"
+										}
+									]
+								}
+							]
+						},
+						{
+							"paragraph6": [
+								{
+									"words": [
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "Interac"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "APPROVED"
+										}
+									]
+								}
+							]
+						},
+						{
+							"paragraph7": [
+								{
+									"words": [
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "CHEQUING"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "SEQ"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": ":"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "703007383601"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "AUTH"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "CODE"
+										},
+										{
+											"confidence": 0.7,
+											"vertices": [],
+											"text": ":"
+										},
+										{
+											"confidence": 0.9,
+											"vertices": [],
+											"text": "195265"
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"block7": [
+				{
+					"paragraphs": [
+						{
+							"paragraph1": [
+								{
+									"words": [
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "7030"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "07"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "38369"
+										},
+										{
+											"confidence": 0.97,
+											"vertices": [],
+											"text": "24/08/2020"
+										},
+										{
+											"confidence": 0.97,
+											"vertices": [],
+											"text": "4801"
+										}
+									]
+								}
+							]
+						},
+						{
+							"paragraph2": [
+								{
+									"words": [
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "13"
+										},
+										{
+											"confidence": 0.96,
+											"vertices": [],
+											"text": "%"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "HST"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "R135772911"
+										}
+									]
+								}
+							]
+						},
+						{
+							"paragraph3": [
+								{
+									"words": [
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "13"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "%"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "HST"
+										},
+										{
+											"confidence": 0.98,
+											"vertices": [],
+											"text": "R135772911"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "RETURN"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "POLICY"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "DEFINITIONS"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "POLICY"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "ID"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "DAYS"
+										},
+										{
+											"confidence": 0.98,
+											"vertices": [],
+											"text": "POLICY"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "EXPIRES"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "ON"
+										}
+									]
+								}
+							]
+						},
+						{
+							"paragraph4": [
+								{
+									"words": [
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "90"
+										}
+									]
+								}
+							]
+						},
+						{
+							"paragraph5": [
+								{
+									"words": [
+										{
+											"confidence": 0.98,
+											"vertices": [],
+											"text": "22/11/2020"
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"block8": [
+				{
+					"paragraphs": [
+						{
+							"paragraph1": [
+								{
+									"words": [
+										{
+											"confidence": 0.98,
+											"vertices": [],
+											"text": "A"
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"block9": [
+				{
+					"paragraphs": [
+						{
+							"paragraph1": [
+								{
+									"words": [
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "1"
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"block10": [
+				{
+					"paragraphs": [
+						{
+							"paragraph1": [
+								{
+									"words": [
+										{
+											"confidence": 0.98,
+											"vertices": [],
+											"text": "DID"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "WE"
+										},
+										{
+											"confidence": 0.98,
+											"vertices": [],
+											"text": "NAIL"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "IT"
+										},
+										{
+											"confidence": 0.98,
+											"vertices": [],
+											"text": "?"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "Take"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "a"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "short"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "survey"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "for"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "a"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "chance"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "TO"
+										},
+										{
+											"confidence": 0.87,
+											"vertices": [],
+											"text": "WIN"
+										}
+									]
+								}
+							]
+						},
+						{
+							"paragraph2": [
+								{
+									"words": [
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "A"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "$"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "3,000"
+										},
+										{
+											"confidence": 0.98,
+											"vertices": [],
+											"text": "HOME"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "DEPOT"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "GIFT"
+										},
+										{
+											"confidence": 1.0,
+											"vertices": [],
+											"text": "CARD"
+										},
+										{
+											"confidence": 0.76,
+											"vertices": [],
+											"text": "!"
+										}
+									]
+								}
+							]
+						},
+						{
+							"paragraph3": [
+								{
+									"words": [
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "www.homedepot.com/survey"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "User"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "ID"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": ":"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "H88"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "84057"
+										},
+										{
+											"confidence": 0.98,
+											"vertices": [],
+											"text": "77034"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "PASSWORD"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": ":"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "20424"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "77027"
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"block11": [
+				{
+					"paragraphs": [
+						{
+							"paragraph1": [
+								{
+									"words": [
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "See"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "complete"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "rules"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "on"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "website"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "."
+										}
+									]
+								}
+							]
+						},
+						{
+							"paragraph2": [
+								{
+									"words": [
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "No"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "purchase"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "necessary"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "."
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "("
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "Sondage"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "offert"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "en"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "français"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "sur"
+										},
+										{
+											"confidence": 0.99,
+											"vertices": [],
+											"text": "le"
+										},
+										{
+											"confidence": 0.98,
+											"vertices": [],
+											"text": "Web"
+										},
+										{
+											"confidence": 0.67,
+											"vertices": [],
+											"text": ")"
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}
