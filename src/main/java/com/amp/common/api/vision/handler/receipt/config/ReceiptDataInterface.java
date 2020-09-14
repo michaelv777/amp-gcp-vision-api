@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.amp.common.api.vision.handler.receipt;
+package com.amp.common.api.vision.handler.receipt.config;
 
 import java.time.Instant;
 

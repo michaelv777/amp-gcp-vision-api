@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.amp.common.api.vision.handler.receipt;
+package com.amp.common.api.vision.handler.receipt.config;
 
 import java.io.Serializable;
 
@@ -14,12 +14,17 @@ import com.google.gson.annotations.SerializedName;
  * @author mveksler
  *
  */
-public class DateTimeConfiguration implements Serializable
+public class DateTimeConfigurationItem implements Serializable
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+
+	@SerializedName("type")
+	@Expose
+	public Integer priority = 0;
+	
+	@SerializedName("type")
+	@Expose
+	public String type = StringUtils.EMPTY;
 	
 	@SerializedName("purchaseDate")
 	@Expose
@@ -37,6 +42,34 @@ public class DateTimeConfiguration implements Serializable
 	@Expose
 	public String purchaseDateFormat = StringUtils.EMPTY;
 	
+	/**
+	 * @return the priority
+	 */
+	public Integer getPriority() {
+		return priority;
+	}
+
+	/**
+	 * @param priority the priority to set
+	 */
+	public void setPriority(Integer priority) {
+		this.priority = priority;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public String getType() {
+		return type;
+	}
+
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	public String getPurchaseDate() {
 		return purchaseDate;
 	}
@@ -44,7 +77,6 @@ public class DateTimeConfiguration implements Serializable
 	public void setPurchaseDate(String purchaseDate) {
 		this.purchaseDate = purchaseDate;
 	}
-
 	
 	/**
 	 * @return the purchaseTime
@@ -95,10 +127,8 @@ public class DateTimeConfiguration implements Serializable
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((purchaseAMPM == null) ? 0 : purchaseAMPM.hashCode());
-		result = prime * result + ((purchaseDate == null) ? 0 : purchaseDate.hashCode());
-		result = prime * result + ((purchaseDateFormat == null) ? 0 : purchaseDateFormat.hashCode());
-		result = prime * result + ((purchaseTime == null) ? 0 : purchaseTime.hashCode());
+		result = prime * result + ((priority == null) ? 0 : priority.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
 
@@ -113,36 +143,22 @@ public class DateTimeConfiguration implements Serializable
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof DateTimeConfiguration)) {
+		if (!(obj instanceof DateTimeConfigurationItem)) {
 			return false;
 		}
-		DateTimeConfiguration other = (DateTimeConfiguration) obj;
-		if (purchaseAMPM == null) {
-			if (other.purchaseAMPM != null) {
+		DateTimeConfigurationItem other = (DateTimeConfigurationItem) obj;
+		if (priority == null) {
+			if (other.priority != null) {
 				return false;
 			}
-		} else if (!purchaseAMPM.equals(other.purchaseAMPM)) {
+		} else if (!priority.equals(other.priority)) {
 			return false;
 		}
-		if (purchaseDate == null) {
-			if (other.purchaseDate != null) {
+		if (type == null) {
+			if (other.type != null) {
 				return false;
 			}
-		} else if (!purchaseDate.equals(other.purchaseDate)) {
-			return false;
-		}
-		if (purchaseDateFormat == null) {
-			if (other.purchaseDateFormat != null) {
-				return false;
-			}
-		} else if (!purchaseDateFormat.equals(other.purchaseDateFormat)) {
-			return false;
-		}
-		if (purchaseTime == null) {
-			if (other.purchaseTime != null) {
-				return false;
-			}
-		} else if (!purchaseTime.equals(other.purchaseTime)) {
+		} else if (!type.equals(other.type)) {
 			return false;
 		}
 		return true;
