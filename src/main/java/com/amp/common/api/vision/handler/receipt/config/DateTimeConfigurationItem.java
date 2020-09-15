@@ -18,7 +18,7 @@ public class DateTimeConfigurationItem implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 
-	@SerializedName("type")
+	@SerializedName("priority")
 	@Expose
 	public Integer priority = 0;
 	

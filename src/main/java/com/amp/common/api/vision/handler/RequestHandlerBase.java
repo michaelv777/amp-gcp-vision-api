@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.amp.common.api.vision.dto.ReceiptDTO;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
-import com.amp.common.api.vision.handler.receipt.config.ReceiptDataInterface;
+import com.amp.common.api.vision.handler.receipt.config.IReceiptData;
 import com.amp.common.api.vision.handler.receipt.parser.DateTimeParser;
 import com.amp.common.api.vision.jpa.ReceiptConfigurationM;
 import com.google.cloud.vision.v1.TextAnnotation;
@@ -25,7 +25,7 @@ import com.jayway.jsonpath.JsonPath;
  * @author mveksler
  *
  */
-public abstract class RequestHandlerBase implements RequestHandlerInterface, ReceiptDataInterface
+public abstract class RequestHandlerBase implements RequestHandlerInterface, IReceiptData
 {
 	private static final Logger LOGGER = 
 			LoggerFactory.getLogger(RequestHandlerBase.class);
@@ -68,7 +68,7 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, Rec
 	        		vendorConfig.getReceiptconfiguration(), ReceiptConfiguration.class); 
 	        	
 	        	receiptDTO.setPurchaseDate(this.getPurchaseDate(
-	        			jsonContext, receiptConfig));
+	        			jsonContext, receiptAnnotation, receiptConfig));
 	        }
 	        
 			return receiptDTO;
@@ -86,9 +86,9 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, Rec
 	}
 
 	@Override
-	public Instant getPurchaseDate(
-			DocumentContext jsonContext, 
-			ReceiptConfiguration receiptConfig)
+	public Instant getPurchaseDate(DocumentContext jsonContext, 
+								   TextAnnotation receiptAnnotation,
+								   ReceiptConfiguration receiptConfig)
 	{
 		String cMethodName = "";
 		
@@ -98,7 +98,8 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, Rec
 	        StackTraceElement ste = stacktrace[1];
 	        cMethodName = ste.getMethodName();
 	        
-	        Instant value = new DateTimeParser().handleData(jsonContext, receiptConfig);
+	        Instant value = new DateTimeParser().handleData(
+	        		jsonContext, receiptAnnotation, receiptConfig);
 	        
 	        return value;
 		}

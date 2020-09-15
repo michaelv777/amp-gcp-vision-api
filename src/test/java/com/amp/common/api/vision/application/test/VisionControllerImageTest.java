@@ -43,7 +43,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.cloud.vision.v1.ImageAnnotatorClient;
+import com.amp.common.api.vision.handler.receipt.config.DateTimeConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
+import com.amp.common.api.vision.handler.receipt.parser.ConfigurationType;
 import com.google.cloud.vision.v1.AnnotateImageRequest;
 import com.google.cloud.vision.v1.AnnotateImageResponse;
 import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
@@ -303,76 +305,7 @@ public class VisionControllerImageTest {
         			metadataContent, ReceiptConfiguration.class);
 	        //---
 	        
-	        //---purchaseDate
-	        String purchaseDateValue = StringUtils.EMPTY;
-	        String purchaseTimeValue = StringUtils.EMPTY;
-	        String purchaseAMPMValue = StringUtils.EMPTY;
-	        String purchaseDateTimeValue = StringUtils.EMPTY;
-	        String purchaseDateFormat = "dd/MM/yy hh:mm a";
-	        
-	        try
-	        {
-	        	net.minidev.json.JSONArray purchaseDate = 
-	        		jsonContext.read(receiptConfig.getPurchaseDateTime().getPurchaseDate()); //("$.blocks[3]..paragraphs[0]..words[0].text");
-	        	
-	        	if ( purchaseDate.size() >= 1)
-		        {
-		        	purchaseDateValue = (String)purchaseDate.get(0);
-		        }
-	        }
-	        catch( Exception e ){}
-	        
-	        try
-	        {
-	        	net.minidev.json.JSONArray purchaseTime = 
-	        		jsonContext.read(receiptConfig.getPurchaseDateTime().getPurchaseTime());//("$.blocks[4]..paragraphs[0]..words[0].text");
-	        	
-	        	if ( purchaseTime.size() >= 1)
-		        {
-	        		purchaseTimeValue = (String)purchaseTime.get(0);
-		        }
-	        }
-	        catch( Exception e ) {}
-	        
-	        try
-	        {
-	        	net.minidev.json.JSONArray purchaseAMPM = 
-	        		jsonContext.read(receiptConfig.getPurchaseDateTime().getPurchaseAMPM());//("$.blocks[4]..paragraphs[0]..words[1].text");
-	        	
-	        	if ( purchaseAMPM.size() >= 1)
-		        {
-	        		purchaseAMPMValue = (String)purchaseAMPM.get(0);
-		        }
-	        
-	        }
-	        catch( Exception e ){}
-	        
-	        try
-	        {
-	        	if ( !purchaseDateValue.equals(StringUtils.EMPTY))
-	        	{
-	        		purchaseDateTimeValue += purchaseDateValue;
-	        	}
-	        	
-	        	if ( !purchaseTimeValue.equals(StringUtils.EMPTY))
-	        	{
-	        		purchaseDateTimeValue += " ";
-	        		purchaseDateTimeValue += purchaseTimeValue;
-	        	}
-	        	
-	        	if ( !purchaseAMPMValue.equals(StringUtils.EMPTY))
-	        	{
-	        		purchaseDateTimeValue += " ";
-	        		purchaseDateTimeValue += purchaseAMPMValue;
-	        	}
-	        	
-	        	Date date = new SimpleDateFormat(purchaseDateFormat).parse(purchaseDateTimeValue);
-	        
-	        	Instant value = date.toInstant();
-	        	
-	        	System.out.println( value);
-	        }
-	        catch( Exception e ) {}
+	        this.parsePayloadDateTimeWithJsonPath(jsonContext, receiptConfig);
 	        
 	        //---subtotal
 	        net.minidev.json.JSONArray subtotalArray = 
@@ -432,5 +365,96 @@ public class VisionControllerImageTest {
 			System.err.println( e.getMessage());
 		}
 		
+	}
+
+	private void parsePayloadDateTimeWithJsonPath(DocumentContext jsonContext, ReceiptConfiguration receiptConfig) {
+		//---purchaseDate
+		String purchaseDateValue = StringUtils.EMPTY;
+		String purchaseTimeValue = StringUtils.EMPTY;
+		String purchaseAMPMValue = StringUtils.EMPTY;
+		String purchaseDateTimeValue = StringUtils.EMPTY;
+		String purchaseDateFormat = "dd/MM/yy hh:mm a";
+		
+		DateTimeConfigurationItem configurationItem = null;
+		
+		for( DateTimeConfigurationItem configurationItemValue : receiptConfig.getPurchaseDateTime().getConfigurationItems() )
+		{
+			if ( configurationItemValue.getType().equalsIgnoreCase(ConfigurationType.JSON_PATH.getConfigurationType()))
+			{
+				configurationItem = configurationItemValue;
+			}
+		}
+		
+		if ( configurationItem == null )
+		{
+			System.err.println( "configurationItem == null" );
+			
+			return;
+		}
+		
+		try
+		{
+			
+			net.minidev.json.JSONArray purchaseDate = 
+				jsonContext.read(configurationItem.getPurchaseDate()); //("$.blocks[3]..paragraphs[0]..words[0].text");
+			
+			if ( purchaseDate.size() >= 1)
+		    {
+		    	purchaseDateValue = (String)purchaseDate.get(0);
+		    }
+		}
+		catch( Exception e ){}
+		
+		try
+		{
+			net.minidev.json.JSONArray purchaseTime = 
+				jsonContext.read(configurationItem.getPurchaseTime());//("$.blocks[4]..paragraphs[0]..words[0].text");
+			
+			if ( purchaseTime.size() >= 1)
+		    {
+				purchaseTimeValue = (String)purchaseTime.get(0);
+		    }
+		}
+		catch( Exception e ) {}
+		
+		try
+		{
+			net.minidev.json.JSONArray purchaseAMPM = 
+				jsonContext.read(configurationItem.getPurchaseAMPM());//("$.blocks[4]..paragraphs[0]..words[1].text");
+			
+			if ( purchaseAMPM.size() >= 1)
+		    {
+				purchaseAMPMValue = (String)purchaseAMPM.get(0);
+		    }
+		
+		}
+		catch( Exception e ){}
+		
+		try
+		{
+			if ( !purchaseDateValue.equals(StringUtils.EMPTY))
+			{
+				purchaseDateTimeValue += purchaseDateValue;
+			}
+			
+			if ( !purchaseTimeValue.equals(StringUtils.EMPTY))
+			{
+				purchaseDateTimeValue += " ";
+				purchaseDateTimeValue += purchaseTimeValue;
+			}
+			
+			if ( !purchaseAMPMValue.equals(StringUtils.EMPTY))
+			{
+				purchaseDateTimeValue += " ";
+				purchaseDateTimeValue += purchaseAMPMValue;
+			}
+			
+			Date date = new SimpleDateFormat(purchaseDateFormat).parse(purchaseDateTimeValue);
+		
+			Instant value = date.toInstant();
+			
+			System.out.println( value);
+		}
+		catch( Exception e ) {}
 	}
 }
