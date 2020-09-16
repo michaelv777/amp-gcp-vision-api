@@ -6,6 +6,7 @@ package com.amp.common.api.vision.utils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,7 +109,7 @@ public class RegexParser
   		}
 	}
   	
-  //----
+  	//----
   	public String getGroupValueByRegex(String cRegex, String cValue, int group) 
 	{
 		String  cMethodName = "";
@@ -143,6 +144,56 @@ public class RegexParser
   		catch( Exception e)
   		{
   			cLogger.error("M.V. Custom::" + cMethodName + ":" + e.getMessage());
+  			
+      		return cGroupVal;
+  		}
+	}
+  	
+  	//----
+  	public String getGroupValueByRegex(String cRegex, String cValue, int match, int group) 
+	{
+		String  cMethodName = "";
+  		
+		@SuppressWarnings("unused")
+		boolean cRetVal = false;
+		
+		String cGroupVal = StringUtils.EMPTY;
+		
+  		try
+  		{
+  			StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+	        StackTraceElement ste = stacktrace[1];
+	        cMethodName = ste.getMethodName();
+      		
+	        Pattern r = Pattern.compile(cRegex);
+			
+	        Matcher m = r.matcher(cValue);
+			
+	        int matchIndex = 1;
+	        
+	        while (m.find()) 
+	        {
+	        	if ( matchIndex == match )
+	        	{
+					cGroupVal = m.group(group);
+					
+					if ( cGroupVal == null )
+					{
+						cGroupVal = StringUtils.EMPTY;
+					}
+					else
+					{
+						break;
+					}
+	        	}
+				++matchIndex;
+	        }
+			
+  			return cGroupVal ;
+  		}
+  		catch( Exception e)
+  		{
+  			cLogger.error(cMethodName + ":" + e.getMessage(), e);
   			
       		return cGroupVal;
   		}

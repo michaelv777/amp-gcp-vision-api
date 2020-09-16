@@ -46,6 +46,7 @@ import com.google.cloud.vision.v1.ImageAnnotatorClient;
 import com.amp.common.api.vision.handler.receipt.config.DateTimeConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
 import com.amp.common.api.vision.handler.receipt.parser.ConfigurationType;
+import com.amp.common.api.vision.utils.RegexParser;
 import com.google.cloud.vision.v1.AnnotateImageRequest;
 import com.google.cloud.vision.v1.AnnotateImageResponse;
 import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
@@ -77,6 +78,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -281,31 +283,38 @@ public class VisionControllerImageTest {
 	{
 		try
 		{
-			String payloadFileName  = "static/homedepot_payload1.json";
+			String payloadJsonFileName = "static/homedepot_payload1.json";
+			String payloadTextFileName = "static/homedepot_payload1.txt";
 			String metadataFileName = "static/homedepot_parser_metadata.json";
 			
 			ClassLoader classLoader = getClass().getClassLoader();
 			
-	    	File 		   filePayload = new File(classLoader.getResource(payloadFileName).getFile());
-	    	String absolutePathPayload = filePayload.getAbsolutePath();
-	        String      payloadContent = new String(Files.readAllBytes(Paths.get(absolutePathPayload)));
-	        JSONObject  receiptPayload = new JSONObject(payloadContent);
+			//---
+	    	File filePayloadJson = new File(classLoader.getResource(payloadJsonFileName).getFile());
+	    	String absolutePathPayloadJson = filePayloadJson.getAbsolutePath();
+	        String      payloadContentJson = new String(Files.readAllBytes(Paths.get(absolutePathPayloadJson)));
+	        JSONObject  receiptPayload = new JSONObject(payloadContentJson);
 	        
 	        DocumentContext jsonContext = JsonPath.
 	        		using(Configuration.defaultConfiguration()).
 	        		parse(receiptPayload.toString());
+	        
 	        //---
-	        File 		   fileMetadata = new File(classLoader.getResource(metadataFileName).getFile());
+	        File filePayloadText = new File(classLoader.getResource(payloadTextFileName).getFile());
+	    	String absolutePathPayloadText = filePayloadText.getAbsolutePath();
+	        String payloadContentText = new String(Files.readAllBytes(Paths.get(absolutePathPayloadText)));
+	        
+	        //---
+	        File fileMetadata = new File(classLoader.getResource(metadataFileName).getFile());
 	    	String absolutePathMetadata = fileMetadata.getAbsolutePath();
-	        String      metadataContent = new String(Files.readAllBytes(Paths.get(absolutePathMetadata)));
+	        String metadataContent = new String(Files.readAllBytes(Paths.get(absolutePathMetadata)));
 	        
 	        Gson gson = new GsonBuilder().setLenient().create();
 	        
         	ReceiptConfiguration receiptConfig = gson.fromJson(
         			metadataContent, ReceiptConfiguration.class);
 	        //---
-	        
-	        this.parsePayloadDateTimeWithJsonPath(jsonContext, receiptConfig);
+	        this.parsePayloadDateTimeWithRegex(payloadContentText, receiptConfig);
 	        
 	        //---subtotal
 	        net.minidev.json.JSONArray subtotalArray = 
@@ -366,8 +375,109 @@ public class VisionControllerImageTest {
 		}
 		
 	}
-
-	private void parsePayloadDateTimeWithJsonPath(DocumentContext jsonContext, ReceiptConfiguration receiptConfig) {
+	//---
+	private void parsePayloadDateTimeWithRegex(
+			String payloadContentText,
+			ReceiptConfiguration receiptConfig) 
+	{
+		try
+		{
+			RegexParser regexParser = new RegexParser();
+			
+			//---purchaseDate
+			String purchaseDateFormat = "dd/MM/yy hh:mm a";
+			
+			DateTimeConfigurationItem configurationItem = null;
+			
+			for( DateTimeConfigurationItem configurationItemValue : receiptConfig.getPurchaseDateTime().getConfigurationItems() )
+			{
+				if ( configurationItemValue.getType().equalsIgnoreCase(ConfigurationType.JSON_REGEX.getConfigurationType()))
+				{
+					configurationItem = configurationItemValue;
+					
+					break;
+				}
+			}
+			
+			if ( configurationItem == null )
+			{
+				System.err.println( "configurationItem == null" );
+				
+				return;
+			}
+		
+			String day = regexParser.getGroupValueByRegex(
+					configurationItem.getPurchaseDate(), 
+					payloadContentText, 
+					configurationItem.getPurchaseDateDayMatch(), 
+					configurationItem.getPurchaseDateDayGroup());
+			
+			int dayValue = (StringUtils.isNotBlank(day) &&  regexParser.isNumeric(day)) ? Integer.valueOf(day) : 0;
+					
+			String month = regexParser.getGroupValueByRegex(
+					configurationItem.getPurchaseDate(), 
+					payloadContentText, 
+					configurationItem.getPurchaseDateMonthMatch(), 
+					configurationItem.getPurchaseDateMonthGroup());
+			
+			int monthValue = (StringUtils.isNotBlank(month) &&  regexParser.isNumeric(month)) ? Integer.valueOf(month) : 0;
+			
+			String year = regexParser.getGroupValueByRegex(
+					configurationItem.getPurchaseDate(), 
+					payloadContentText, 
+					configurationItem.getPurchaseDateYearMatch(), 
+					configurationItem.getPurchaseDateYearGroup());
+			
+			int yearValue = (StringUtils.isNotBlank(year) &&  regexParser.isNumeric(year)) ? Integer.valueOf(year) : 0;
+			
+			String hour = regexParser.getGroupValueByRegex(
+					configurationItem.getPurchaseTime(), 
+					payloadContentText, 
+					configurationItem.getPurchaseTimeHourMatch(), 
+					configurationItem.getPurchaseTimeHourGroup());
+			
+			int hourValue = (StringUtils.isNotBlank(hour) &&  regexParser.isNumeric(hour)) ? Integer.valueOf(hour) : 0;
+			
+			String minute = regexParser.getGroupValueByRegex(
+					configurationItem.getPurchaseTime(), 
+					payloadContentText, 
+					configurationItem.getPurchaseTimeMinuteMatch(), 
+					configurationItem.getPurchaseTimeMinuteGroup());
+			
+			int minuteValue = (StringUtils.isNotBlank(minute) &&  regexParser.isNumeric(minute)) ? Integer.valueOf(minute) : 0;
+			
+			String ampm = regexParser.getGroupValueByRegex(
+					configurationItem.getPurchaseTime(), 
+					payloadContentText, 
+					configurationItem.getPurchaseTimeAMPMMatch(), 
+					configurationItem.getPurchaseTimeAMPMGroup());
+			
+			Calendar cal = Calendar.getInstance();
+			if ( ampm.equalsIgnoreCase("am"))
+			{
+				cal.set( Calendar.AM_PM, Calendar.AM );
+			}
+			else
+			{
+				cal.set( Calendar.AM_PM, Calendar.PM );
+			}
+			cal.set(yearValue, monthValue, dayValue, hourValue, minuteValue);
+		
+			Instant value = cal.toInstant();
+			
+			System.out.println( value);
+		}
+		catch( Exception e ) 
+		{
+			System.err.println( e.getMessage());
+		}
+	}
+	
+	@SuppressWarnings("unused")
+	private void parsePayloadDateTimeWithJsonPath(
+			DocumentContext jsonContext, 
+			ReceiptConfiguration receiptConfig) 
+	{
 		//---purchaseDate
 		String purchaseDateValue = StringUtils.EMPTY;
 		String purchaseTimeValue = StringUtils.EMPTY;

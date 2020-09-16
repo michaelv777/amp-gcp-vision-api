@@ -42,6 +42,54 @@ public class DateTimeConfigurationItem implements Serializable
 	@Expose
 	public String purchaseDateFormat = StringUtils.EMPTY;
 	
+	@SerializedName("purchaseDateDayGroup")
+	@Expose
+	public Integer purchaseDateDayGroup;
+	
+	@SerializedName("purchaseDateMonthGroup")
+	@Expose
+	public Integer purchaseDateMonthGroup;
+	
+	@SerializedName("purchaseDateYearGroup")
+	@Expose
+	public Integer purchaseDateYearGroup;
+     
+	@SerializedName("purchaseTimeHourGroup")
+	@Expose
+	public Integer purchaseTimeHourGroup;
+	
+	@SerializedName("purchaseTimeHourMinuteGroup")
+	@Expose
+	public Integer purchaseTimeMinuteGroup;
+	
+	@SerializedName("purchaseTimeAMPMGroup")
+	@Expose
+	public Integer purchaseTimeAMPMGroup;
+    
+	@SerializedName("purchaseDateDayMatch")
+	@Expose
+	public Integer purchaseDateDayMatch;
+	
+	@SerializedName("purchaseDateMonthMatch")
+	@Expose
+	public Integer purchaseDateMonthMatch;
+	
+	@SerializedName("purchaseDateYearMatch")
+	@Expose
+	public Integer purchaseDateYearMatch;
+	
+	@SerializedName("purchaseTimeHourMatch")
+	@Expose
+	public Integer purchaseTimeHourMatch;
+	
+	@SerializedName("purchaseTimeMinuteMatch")
+	@Expose
+	public Integer purchaseTimeMinuteMatch;
+	
+	@SerializedName("purchaseTimeAMPMMatch")
+	@Expose
+	public Integer purchaseTimeAMPMMatch;
+	
 	/**
 	 * @return the priority
 	 */
@@ -118,6 +166,176 @@ public class DateTimeConfigurationItem implements Serializable
 	 */
 	public void setPurchaseDateFormat(String purchaseDateFormat) {
 		this.purchaseDateFormat = purchaseDateFormat;
+	}
+
+	
+	/**
+	 * @return the purchaseDateDayGroup
+	 */
+	public Integer getPurchaseDateDayGroup() {
+		return purchaseDateDayGroup;
+	}
+
+	/**
+	 * @param purchaseDateDayGroup the purchaseDateDayGroup to set
+	 */
+	public void setPurchaseDateDayGroup(Integer purchaseDateDayGroup) {
+		this.purchaseDateDayGroup = purchaseDateDayGroup;
+	}
+
+	/**
+	 * @return the purchaseDateMonthGroup
+	 */
+	public Integer getPurchaseDateMonthGroup() {
+		return purchaseDateMonthGroup;
+	}
+
+	/**
+	 * @param purchaseDateMonthGroup the purchaseDateMonthGroup to set
+	 */
+	public void setPurchaseDateMonthGroup(Integer purchaseDateMonthGroup) {
+		this.purchaseDateMonthGroup = purchaseDateMonthGroup;
+	}
+
+	/**
+	 * @return the purchaseDateYearGroup
+	 */
+	public Integer getPurchaseDateYearGroup() {
+		return purchaseDateYearGroup;
+	}
+
+	/**
+	 * @param purchaseDateYearGroup the purchaseDateYearGroup to set
+	 */
+	public void setPurchaseDateYearGroup(Integer purchaseDateYearGroup) {
+		this.purchaseDateYearGroup = purchaseDateYearGroup;
+	}
+
+	/**
+	 * @return the purchaseTimeHourGroup
+	 */
+	public Integer getPurchaseTimeHourGroup() {
+		return purchaseTimeHourGroup;
+	}
+
+	/**
+	 * @param purchaseTimeHourGroup the purchaseTimeHourGroup to set
+	 */
+	public void setPurchaseTimeHourGroup(Integer purchaseTimeHourGroup) {
+		this.purchaseTimeHourGroup = purchaseTimeHourGroup;
+	}
+
+	/**
+	 * @return the purchaseTimeMinuteGroup
+	 */
+	public Integer getPurchaseTimeMinuteGroup() {
+		return purchaseTimeMinuteGroup;
+	}
+
+	/**
+	 * @param purchaseTimeMinuteGroup the purchaseTimeMinuteGroup to set
+	 */
+	public void setPurchaseTimeMinuteGroup(Integer purchaseTimeMinuteGroup) {
+		this.purchaseTimeMinuteGroup = purchaseTimeMinuteGroup;
+	}
+
+	/**
+	 * @return the purchaseTimeAMPMGroup
+	 */
+	public Integer getPurchaseTimeAMPMGroup() {
+		return purchaseTimeAMPMGroup;
+	}
+
+	/**
+	 * @param purchaseTimeAMPMGroup the purchaseTimeAMPMGroup to set
+	 */
+	public void setPurchaseTimeAMPMGroup(Integer purchaseTimeAMPMGroup) {
+		this.purchaseTimeAMPMGroup = purchaseTimeAMPMGroup;
+	}
+
+	
+	/**
+	 * @return the purchaseDateDayMatch
+	 */
+	public Integer getPurchaseDateDayMatch() {
+		return purchaseDateDayMatch;
+	}
+
+	/**
+	 * @param purchaseDateDayMatch the purchaseDateDayMatch to set
+	 */
+	public void setPurchaseDateDayMatch(Integer purchaseDateDayMatch) {
+		this.purchaseDateDayMatch = purchaseDateDayMatch;
+	}
+
+	/**
+	 * @return the purchaseDateMonthMatch
+	 */
+	public Integer getPurchaseDateMonthMatch() {
+		return purchaseDateMonthMatch;
+	}
+
+	/**
+	 * @param purchaseDateMonthMatch the purchaseDateMonthMatch to set
+	 */
+	public void setPurchaseDateMonthMatch(Integer purchaseDateMonthMatch) {
+		this.purchaseDateMonthMatch = purchaseDateMonthMatch;
+	}
+
+	/**
+	 * @return the purchaseDateYearMatch
+	 */
+	public Integer getPurchaseDateYearMatch() {
+		return purchaseDateYearMatch;
+	}
+
+	/**
+	 * @param purchaseDateYearMatch the purchaseDateYearMatch to set
+	 */
+	public void setPurchaseDateYearMatch(Integer purchaseDateYearMatch) {
+		this.purchaseDateYearMatch = purchaseDateYearMatch;
+	}
+
+	/**
+	 * @return the purchaseTimeHourMatch
+	 */
+	public Integer getPurchaseTimeHourMatch() {
+		return purchaseTimeHourMatch;
+	}
+
+	/**
+	 * @param purchaseTimeHourMatch the purchaseTimeHourMatch to set
+	 */
+	public void setPurchaseTimeHourMatch(Integer purchaseTimeHourMatch) {
+		this.purchaseTimeHourMatch = purchaseTimeHourMatch;
+	}
+
+	/**
+	 * @return the purchaseTimeMinuteMatch
+	 */
+	public Integer getPurchaseTimeMinuteMatch() {
+		return purchaseTimeMinuteMatch;
+	}
+
+	/**
+	 * @param purchaseTimeMinuteMatch the purchaseTimeMinuteMatch to set
+	 */
+	public void setPurchaseTimeMinuteMatch(Integer purchaseTimeMinuteMatch) {
+		this.purchaseTimeMinuteMatch = purchaseTimeMinuteMatch;
+	}
+
+	/**
+	 * @return the purchaseTimeAMPMMatch
+	 */
+	public Integer getPurchaseTimeAMPMMatch() {
+		return purchaseTimeAMPMMatch;
+	}
+
+	/**
+	 * @param purchaseTimeAMPMMatch the purchaseTimeAMPMMatch to set
+	 */
+	public void setPurchaseTimeAMPMMatch(Integer purchaseTimeAMPMMatch) {
+		this.purchaseTimeAMPMMatch = purchaseTimeAMPMMatch;
 	}
 
 	/* (non-Javadoc)
