@@ -34,4 +34,9 @@ public interface IReceiptData
 			DocumentContext jsonContext, 
 		   	TextAnnotation receiptAnnotation,
 		    ReceiptConfiguration receiptConfig);
+	
+	public BigDecimal getTaxAmount(
+			 DocumentContext jsonContext, 
+		   	 TextAnnotation receiptAnnotation,
+		   	 ReceiptConfiguration receiptConfig);
 }

@@ -5,8 +5,6 @@ package com.amp.common.api.vision.handler.receipt.config;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -43,7 +41,7 @@ public class ReceiptConfiguration implements Serializable
 	
 	@SerializedName("taxAmount")
 	@Expose
-	public String taxAmount = StringUtils.EMPTY;
+	public TaxAmountConfiguration taxAmount;
 	
 	/**
 	 * @return the purchaseDateTime
@@ -102,20 +100,6 @@ public class ReceiptConfiguration implements Serializable
 	}
 
 	/**
-	 * @return the taxAmount
-	 */
-	public String getTaxAmount() {
-		return taxAmount;
-	}
-
-	/**
-	 * @param taxAmount the taxAmount to set
-	 */
-	public void setTaxAmount(String taxAmount) {
-		this.taxAmount = taxAmount;
-	}
-
-	/**
 	 * @return the taxRate
 	 */
 	public TaxRateConfiguration getTaxRate() {
@@ -128,6 +112,18 @@ public class ReceiptConfiguration implements Serializable
 	public void setTaxRate(TaxRateConfiguration taxRate) {
 		this.taxRate = taxRate;
 	}
-	
-	
+
+	/**
+	 * @return the taxAmount
+	 */
+	public TaxAmountConfiguration getTaxAmount() {
+		return taxAmount;
+	}
+
+	/**
+	 * @param taxAmount the taxAmount to set
+	 */
+	public void setTaxAmount(TaxAmountConfiguration taxAmount) {
+		this.taxAmount = taxAmount;
+	}
 }
