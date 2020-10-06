@@ -1,6 +1,24 @@
 {
   "total": "$.blocks[8]..paragraphs[3]..words[1].text",
-  "subtotal": "$.blocks[8]..paragraphs[1]..words[0].text",
+  "subtotal": 
+  {
+    "subtotalConfigutation":
+    [
+      {
+        "type": "json_regex",
+        "priority": 1,
+        "value": "(.*)(?=SUBTOTAL)(SUBTOTAL)(.*)(?=GST/HST)(.*GST/HST.*)(.*)",
+        "match": 1,
+        "group": 3
+      },
+      {
+        "type": "json_path",
+        "priority": 2,
+        "value": "$.blocks[8]..paragraphs[1]..words[0].text"
+      }
+    ]
+  }
+  ,
   "itemsData": {
     "itemsPrices": [
       "$.blocks[7]..paragraphs[0]..words[*].text"
@@ -10,31 +28,33 @@
     ]
   },
   "taxAmount": "$.blocks[8]..paragraphs[2]..words[0].text",
-  "purchaseDateTime": {
-    "purchaseDateTimeConfiguration": [
-     {
-        "priority": 1,
+  "purchaseDateTime": 
+  {
+    "purchaseDateTimeConfiguration": 
+    [
+      {
         "type": "json_regex",
-        "purchaseDateFormat": "dd/MM/yy hh:mm a",
+        "priority": 1,
         "purchaseAMPM": "(1[012]|0[1-9]):([0-5][0-9])(\\s)?(am|pm|AM|PM)",
         "purchaseDate": "(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[012])/([0-9]{4}|[0-9]{2})",
         "purchaseTime": "(1[012]|0[1-9]):([0-5][0-9])(\\s)?(am|pm|AM|PM)",
-        "purchaseDateDayMatch": 2,
+        "purchaseDateFormat": "dd/MM/yy hh:mm a",
         "purchaseDateDayGroup": 1,
-        "purchaseDateMonthMatch": 2,
-        "purchaseDateMonthGroup": 2,
-        "purchaseDateYearMatch": 2,
+        "purchaseDateDayMatch": 2,
         "purchaseDateYearGroup": 3,
-        "purchaseTimeHourMatch": 1,
-        "purchaseTimeHourGroup": 1,
-        "purchaseTimeMinuteMatch": 1,
-        "purchaseTimeMinuteGroup": 2,
+        "purchaseDateYearMatch": 2,
+        "purchaseTimeAMPMGroup": 4,
         "purchaseTimeAMPMMatch": 1,
-        "purchaseTimeAMPMGroup": 4
-      }, 
+        "purchaseTimeHourGroup": 1,
+        "purchaseTimeHourMatch": 1,
+        "purchaseDateMonthGroup": 2,
+        "purchaseDateMonthMatch": 2,
+        "purchaseTimeMinuteGroup": 2,
+        "purchaseTimeMinuteMatch": 1
+      },
       {
-        "priority": 2,
         "type": "json_path",
+        "priority": 2,
         "purchaseAMPM": "$.blocks[4]..paragraphs[0]..words[1].text",
         "purchaseDate": "$.blocks[3]..paragraphs[0]..words[0].text",
         "purchaseTime": "$.blocks[4]..paragraphs[0]..words[0].text",

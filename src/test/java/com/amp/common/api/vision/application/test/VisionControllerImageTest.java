@@ -23,6 +23,7 @@ import static org.junit.Assume.assumeThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -39,6 +40,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -55,6 +57,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.amp.common.api.vision.handler.receipt.config.DateTimeConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
+import com.amp.common.api.vision.handler.receipt.config.SubtotalConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.parser.ConfigurationType;
 import com.amp.common.api.vision.utils.RegexParser;
 import com.google.cloud.vision.v1.AnnotateImageRequest;
@@ -310,6 +313,7 @@ public class VisionControllerImageTest {
 	        this.parsePayloadDateTimeWithRegex(payloadContentText, receiptConfig);
 	        
 	        //---subtotal
+	        this.parseSubtotalWithRegex(payloadContentText,receiptConfig);
 	        /*
 	        net.minidev.json.JSONArray subtotalArray = 
 	        		jsonContext.read(receiptConfig.getSubtotal());//("$.blocks[8]..paragraphs[1]..words[0].text");
@@ -564,6 +568,64 @@ public class VisionControllerImageTest {
 			
 			System.out.println( value);
 		}
-		catch( Exception e ) {}
+		catch( Exception e ) 
+		{
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	//---
+	protected void parseSubtotalWithRegex(
+			String payloadContentText,
+			ReceiptConfiguration receiptConfig)
+	{
+		String cMethodName = "";
+		
+		BigDecimal value = null;
+		
+		try
+		{
+			StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+	        StackTraceElement ste = stacktrace[1];
+	        cMethodName = ste.getMethodName();
+	        
+	        SubtotalConfigurationItem configurationItem = null;
+			
+			for( SubtotalConfigurationItem configurationItemValue : receiptConfig.getSubtotal().getConfigurationItems() )
+			{
+				if ( configurationItemValue.getType().equalsIgnoreCase(ConfigurationType.JSON_REGEX.getConfigurationType()))
+				{
+					configurationItem = configurationItemValue;
+					
+					break;
+				}
+			}
+			
+			if ( configurationItem == null )
+			{
+				System.err.println( "configurationItem == null" );
+				
+				return ;
+			}
+	        
+	        RegexParser regexParser = new RegexParser();
+	        		
+	        String valueStr = regexParser.getGroupValueByRegex(
+	        		payloadContentText, 
+					configurationItem.getValue(), 
+					configurationItem.getMatch(), 
+					configurationItem.getGroup());
+					
+			if ( NumberUtils.isCreatable(valueStr) )
+    		{
+    			value = new BigDecimal(valueStr);
+    			
+    			System.out.println(cMethodName + "::Subtotal: " + value);
+    		}
+		}
+		catch( Exception e )
+		{
+			System.out.println(e.getMessage());
+		}
 	}
 }

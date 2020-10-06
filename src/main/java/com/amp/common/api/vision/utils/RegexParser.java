@@ -165,7 +165,7 @@ public class RegexParser
 	        StackTraceElement ste = stacktrace[1];
 	        cMethodName = ste.getMethodName();
       		
-	        Pattern r = Pattern.compile(cRegex);
+	        Pattern r = Pattern.compile(cRegex, Pattern.DOTALL);
 			
 	        Matcher m = r.matcher(cValue);
 			
