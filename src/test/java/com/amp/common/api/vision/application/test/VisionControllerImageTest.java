@@ -58,6 +58,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.amp.common.api.vision.handler.receipt.config.DateTimeConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
 import com.amp.common.api.vision.handler.receipt.config.SubtotalConfigurationItem;
+import com.amp.common.api.vision.handler.receipt.config.TotalConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.parser.ConfigurationType;
 import com.amp.common.api.vision.utils.RegexParser;
 import com.google.cloud.vision.v1.AnnotateImageRequest;
@@ -326,6 +327,8 @@ public class VisionControllerImageTest {
 	        }
 	        */
 	        //---total
+	        this.parseTotalWithRegex(payloadContentText,receiptConfig);
+	        /*
 	        net.minidev.json.JSONArray totalArray = 
 	        		jsonContext.read(receiptConfig.getTotal());//("$.blocks[8]..paragraphs[4]..words[0].text");
 	        
@@ -335,6 +338,7 @@ public class VisionControllerImageTest {
 	        	
 	        	System.out.println( value);
 	        }
+	        */
 	        
 	        //---tax amount
 	        net.minidev.json.JSONArray taxAmountArray = 
@@ -569,6 +573,61 @@ public class VisionControllerImageTest {
 			System.out.println( value);
 		}
 		catch( Exception e ) 
+		{
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	//---
+	protected void parseTotalWithRegex(
+			String payloadContentText,
+			ReceiptConfiguration receiptConfig)
+	{
+		String cMethodName = "";
+		
+		BigDecimal value = null;
+		
+		try
+		{
+			StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+	        StackTraceElement ste = stacktrace[1];
+	        cMethodName = ste.getMethodName();
+	        
+	        TotalConfigurationItem configurationItem = null;
+			
+			for( TotalConfigurationItem configurationItemValue : receiptConfig.getTotal().getConfigurationItems() )
+			{
+				if ( configurationItemValue.getType().equalsIgnoreCase(ConfigurationType.JSON_REGEX.getConfigurationType()))
+				{
+					configurationItem = configurationItemValue;
+					
+					break;
+				}
+			}
+			
+			if ( configurationItem == null )
+			{
+				System.err.println( "configurationItem == null" );
+				
+				return ;
+			}
+	        
+	        RegexParser regexParser = new RegexParser();
+	        		
+	        String valueStr = regexParser.getGroupValueByRegex(
+	        		payloadContentText, 
+					configurationItem.getValue(), 
+					configurationItem.getMatch(), 
+					configurationItem.getGroup());
+					
+			if ( NumberUtils.isCreatable(valueStr) )
+    		{
+    			value = new BigDecimal(valueStr);
+    			
+    			System.out.println(cMethodName + "::Subtotal: " + value);
+    		}
+		}
+		catch( Exception e )
 		{
 			System.out.println(e.getMessage());
 		}

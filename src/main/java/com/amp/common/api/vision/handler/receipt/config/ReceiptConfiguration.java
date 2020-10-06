@@ -35,7 +35,7 @@ public class ReceiptConfiguration implements Serializable
 
 	@SerializedName("total")
 	@Expose
-	public String total = StringUtils.EMPTY;
+	public TotalConfiguration total;
 	
 	@SerializedName("taxAmount")
 	@Expose
@@ -86,14 +86,14 @@ public class ReceiptConfiguration implements Serializable
 	/**
 	 * @return the total
 	 */
-	public String getTotal() {
+	public TotalConfiguration getTotal() {
 		return total;
 	}
 
 	/**
 	 * @param total the total to set
 	 */
-	public void setTotal(String total) {
+	public void setTotal(TotalConfiguration total) {
 		this.total = total;
 	}
 

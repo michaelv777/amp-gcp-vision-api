@@ -20,6 +20,11 @@ public interface IReceiptData
 			TextAnnotation receiptAnnotation,
 			ReceiptConfiguration receiptConfig);
 	
+	public BigDecimal getTotal(
+			DocumentContext jsonContext, 
+			TextAnnotation receiptAnnotation,
+			ReceiptConfiguration receiptConfig);
+	
 	public BigDecimal getSubtotal(
 			DocumentContext jsonContext, 
 			TextAnnotation receiptAnnotation,

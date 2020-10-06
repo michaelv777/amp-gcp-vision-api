@@ -14,6 +14,7 @@ import com.amp.common.api.vision.handler.receipt.config.IReceiptData;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
 import com.amp.common.api.vision.handler.receipt.parser.DateTimeParser;
 import com.amp.common.api.vision.handler.receipt.parser.SubtotalParser;
+import com.amp.common.api.vision.handler.receipt.parser.TotalParser;
 import com.amp.common.api.vision.jpa.ReceiptConfigurationM;
 import com.google.cloud.vision.v1.TextAnnotation;
 import com.google.gson.Gson;
@@ -57,7 +58,7 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, IRe
 	        cMethodName = ste.getMethodName();
 	        
 	        cRes = this.validateInput(receiptPayload, receiptAnnotation, vendorConfig);
-	        //---
+	        
 	        if ( cRes )
 	        {
 	        	DocumentContext jsonContext = JsonPath.
@@ -70,6 +71,9 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, IRe
 	        		vendorConfig.getReceiptconfiguration(), ReceiptConfiguration.class); 
 	        	
 	        	receiptDTO.setPurchaseDate(this.getPurchaseDate(
+	        			jsonContext, receiptAnnotation, receiptConfig));
+	        	
+	        	receiptDTO.setTotal(this.getTotal(
 	        			jsonContext, receiptAnnotation, receiptConfig));
 	        	
 	        	receiptDTO.setSubtotal(this.getSubtotal(
@@ -114,6 +118,32 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, IRe
 			
 			return null;
 		}
+	}
+	
+	@Override
+	public BigDecimal getTotal(DocumentContext jsonContext, 
+							   TextAnnotation receiptAnnotation,
+							   ReceiptConfiguration receiptConfig)
+	{
+		String cMethodName = "";
+		
+		BigDecimal value = null;
+		
+		try
+		{
+			StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+	        StackTraceElement ste = stacktrace[1];
+	        cMethodName = ste.getMethodName();
+	        
+	        value = new TotalParser().handleData(
+	        		jsonContext, receiptAnnotation, receiptConfig);
+		}
+		catch( Exception e )
+		{
+			LOGGER.error(cMethodName + "::Exception:" + e.getMessage(), e);
+		}
+		
+		return value;
 	}
 	
 	@Override

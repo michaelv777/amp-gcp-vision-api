@@ -1,5 +1,23 @@
 {
-  "total": "$.blocks[8]..paragraphs[3]..words[1].text",
+  "total": 
+  {
+    "totalConfigutation":
+    [
+      {
+        "type": "json_regex",
+        "priority": 1,
+        "value": "(.*)(?=TOTAL)(TOTAL)(\\s+)(\\$?)(.*)(\\s+)(?=X{1,15}\\d{4})(X{1,15}\\d{4})(.*)",
+        "match": 1,
+        "group": 5
+      },
+      {
+        "type": "json_path",
+        "priority": 2,
+        "value": "$.blocks[8]..paragraphs[3]..words[1].text"
+      }
+    ]
+  }
+  ,
   "subtotal": 
   {
     "subtotalConfigutation":
@@ -7,9 +25,9 @@
       {
         "type": "json_regex",
         "priority": 1,
-        "value": "(.*)(?=SUBTOTAL)(SUBTOTAL)(.*)(?=GST/HST)(.*GST/HST.*)(.*)",
+        "value": "(.*)(?=SUBTOTAL)(SUBTOTAL)(\\s+)(\\$?)(.*)(\\s+)(?=GST/HST)(.*GST/HST.*)(.*)",
         "match": 1,
-        "group": 3
+        "group": 5
       },
       {
         "type": "json_path",
