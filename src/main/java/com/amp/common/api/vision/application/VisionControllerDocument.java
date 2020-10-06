@@ -128,7 +128,7 @@ public class VisionControllerDocument
 	   * @throws Exception on errors while closing the client.
 	   */
 	  @GetMapping("/detectDocumentTextGcs")
-	  public String detectDocumentTextGcs(
+	  public List<ReceiptDTO> detectDocumentTextGcs(
 			  @RequestParam("gcsSourcePath") String gcsSourcePath, 
 			  @RequestParam("gcsDestinationPath") String gcsDestinationPath,
 			  HttpServletRequest webRequest)
@@ -261,13 +261,15 @@ public class VisionControllerDocument
 			    	
 			    	ReceiptDTO receiptObject = this.getOcrParserService().processVisionApiResponse(
 			    			receiptPayload, receiptAnnotation);
+			    	
+			    	receiptObjects.add(receiptObject);
 		      } 
 		      else 
 		      {
 		    	  	LOG.info("No MATCH");
 		      }
 		      
-		      return receiptsPayload.toString();
+		      return receiptObjects;
 		  }
 		  catch( Exception e )
 		  {

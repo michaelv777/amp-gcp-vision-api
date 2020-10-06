@@ -3,6 +3,7 @@
  */
 package com.amp.common.api.vision.handler;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 import org.slf4j.Logger;
@@ -109,6 +110,31 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, IRe
 			
 			return null;
 		}
+	}
+	
+	@Override
+	public BigDecimal getSubtotal(DocumentContext jsonContext, 
+							   	  TextAnnotation receiptAnnotation,
+							      ReceiptConfiguration receiptConfig)
+	{
+		String cMethodName = "";
+		
+		BigDecimal value = null;
+		
+		try
+		{
+			StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+	        StackTraceElement ste = stacktrace[1];
+	        cMethodName = ste.getMethodName();
+	        
+	        
+		}
+		catch( Exception e )
+		{
+			LOGGER.error(cMethodName + "::Exception:" + e.getMessage(), e);
+		}
+		
+		return value;
 	}
 	
 	@Override

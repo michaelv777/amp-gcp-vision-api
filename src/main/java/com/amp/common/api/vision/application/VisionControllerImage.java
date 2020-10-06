@@ -305,7 +305,7 @@ public class VisionControllerImage
 	   */
 	  // [START vision_fulltext_detection]
 	  @GetMapping("/detectImageTextLocalExt")
-	  public String detectImageTextLocalExt(
+	  public List<ReceiptDTO> detectImageTextLocalExt(
 			  @RequestParam("imagePath") String imagePath, 
 			  HttpServletRequest webRequest) throws IOException 
 	  {
@@ -354,14 +354,15 @@ public class VisionControllerImage
 			    	JsonObject receiptPayload = new OcrResponseParser().buildResponsePayload(
 			    			imageResponse);
 			    	
+			    	receiptsPayloadArray.add(receiptPayload);
+			    	
 			    	ReceiptDTO receiptObject = this.getOcrParserService().processVisionApiResponse(
 			    			receiptPayload, receiptAnnotation);
 			    	
-			    	receiptsPayloadArray.add(receiptPayload);
-			    	
+			    	receiptObjects.add(receiptObject);
 			    }
 			    
-			    return receiptsPayload.toString();
+			    return receiptObjects;
 		    }
 		    catch( Exception e )
 		    {

@@ -22,13 +22,24 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -42,7 +53,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.google.cloud.vision.v1.ImageAnnotatorClient;
 import com.amp.common.api.vision.handler.receipt.config.DateTimeConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
 import com.amp.common.api.vision.handler.receipt.parser.ConfigurationType;
@@ -53,33 +63,16 @@ import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
 import com.google.cloud.vision.v1.EntityAnnotation;
 import com.google.cloud.vision.v1.Feature;
 import com.google.cloud.vision.v1.Feature.Type;
+import com.google.cloud.vision.v1.Image;
+import com.google.cloud.vision.v1.ImageAnnotatorClient;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.cloud.vision.v1.Image;
-
 import com.google.protobuf.ByteString;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
-
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 
 /**
@@ -354,7 +347,7 @@ public class VisionControllerImageTest {
 	        {
 		        net.minidev.json.JSONArray itemsCodesArray = jsonContext.read(itemsDetailsPath);
 		        
-		        System.out.println( "");
+		        System.out.println(itemsCodesArray.toString());
 	        }
 		}
 		catch(PathNotFoundException e) 
@@ -385,6 +378,7 @@ public class VisionControllerImageTest {
 			RegexParser regexParser = new RegexParser();
 			
 			//---purchaseDate
+			@SuppressWarnings("unused")
 			String purchaseDateFormat = "dd/MM/yy hh:mm a";
 			
 			DateTimeConfigurationItem configurationItem = null;
@@ -452,7 +446,11 @@ public class VisionControllerImageTest {
 					configurationItem.getPurchaseTimeAMPMMatch(), 
 					configurationItem.getPurchaseTimeAMPMGroup());
 			
-			Calendar cal = Calendar.getInstance();
+			GregorianCalendar cal = new GregorianCalendar();
+			cal.setTimeZone(TimeZone.getDefault());
+			//SimpleDateFormat formatter = new SimpleDateFormat(configurationItem.getPurchaseDateFormat());
+			//formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+			
 			if ( ampm.equalsIgnoreCase("am"))
 			{
 				cal.set( Calendar.AM_PM, Calendar.AM );
@@ -461,8 +459,8 @@ public class VisionControllerImageTest {
 			{
 				cal.set( Calendar.AM_PM, Calendar.PM );
 			}
-			cal.set(yearValue, monthValue, dayValue, hourValue, minuteValue);
-		
+			cal.set(yearValue, monthValue, dayValue, hourValue, minuteValue, 0);
+			
 			Instant value = cal.toInstant();
 			
 			System.out.println( value);

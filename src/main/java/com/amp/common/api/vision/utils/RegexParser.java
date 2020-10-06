@@ -35,7 +35,7 @@ public class RegexParser
   		}
   		catch( Exception e)
   		{
-  			cLogger.error("M.V. Custom::" + cMethodName + ":" + e.getMessage());
+  			cLogger.error(cMethodName + ":" + e.getMessage());
   		}
 	}
 	
@@ -71,7 +71,7 @@ public class RegexParser
   		}
   		catch( Exception e)
   		{
-  			cLogger.error("M.V. Custom::" + cMethodName + ":" + e.getMessage());
+  			cLogger.error(cMethodName + ":" + e.getMessage());
   			
       		return "";
   		}
@@ -103,7 +103,7 @@ public class RegexParser
   		}
   		catch( Exception e)
   		{
-  			cLogger.error("M.V. Custom::" + cMethodName + ":" + e.getMessage());
+  			cLogger.error(cMethodName + ":" + e.getMessage());
   			
       		return false;
   		}
@@ -143,7 +143,7 @@ public class RegexParser
   		}
   		catch( Exception e)
   		{
-  			cLogger.error("M.V. Custom::" + cMethodName + ":" + e.getMessage());
+  			cLogger.error(cMethodName + ":" + e.getMessage());
   			
       		return cGroupVal;
   		}
@@ -213,7 +213,7 @@ public class RegexParser
   		}
   		catch( Exception e)
   		{
-  			cLogger.error("M.V. Custom::" + cMethodName + ":" + e.getMessage());
+  			cLogger.error(cMethodName + ":" + e.getMessage());
       		
       		return false;
   		}

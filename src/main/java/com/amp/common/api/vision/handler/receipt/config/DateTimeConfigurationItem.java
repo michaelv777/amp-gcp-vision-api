@@ -58,7 +58,7 @@ public class DateTimeConfigurationItem implements Serializable
 	@Expose
 	public Integer purchaseTimeHourGroup;
 	
-	@SerializedName("purchaseTimeHourMinuteGroup")
+	@SerializedName("purchaseTimeMinuteGroup")
 	@Expose
 	public Integer purchaseTimeMinuteGroup;
 	

@@ -23,7 +23,6 @@ import com.amp.common.api.vision.handler.RequestHandlerFactory;
 import com.amp.common.api.vision.handler.RequestHandlerInterface;
 import com.amp.common.api.vision.jpa.ReceiptConfigurationM;
 import com.amp.common.api.vision.jpa.VendorM;
-import com.google.cloud.vision.v1.AnnotateImageResponse;
 import com.google.cloud.vision.v1.TextAnnotation;
 import com.google.gson.JsonObject;
 
