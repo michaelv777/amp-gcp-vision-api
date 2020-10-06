@@ -37,6 +37,39 @@
     ]
   }
   ,
+  "taxRate": 
+  {
+    "taxRateConfigutation":
+    [
+      {
+        "type": "json_regex",
+        "priority": 1,
+        "value": "(.*)(\\d\\d)(?=%)(%{1})(\\s+)(?=HST\\s+)(.*)",
+        "match": 1,
+        "group": 2
+      }
+    ]
+  }
+  ,
+  "taxAmount": 
+  {
+    "taxAmountConfigutation":
+    [
+      {
+        "type": "json_regex",
+        "priority": 1,
+        "value": "(.*)(?=GST/HST)(GST/HST)(\\s+)(\\$?)(.*)(\\s+)(?=TOTAL)(TOTAL)(.*)",
+        "match": 1,
+        "group": 5
+      },
+      {
+        "type": "json_path",
+        "priority": 2,
+        "value": "$.blocks[8]..paragraphs[2]..words[0].text"
+      }
+    ]
+  }
+  ,
   "itemsData": {
     "itemsPrices": [
       "$.blocks[7]..paragraphs[0]..words[*].text"
@@ -45,7 +78,6 @@
       "$.blocks[6]..paragraphs[0]..words[*].text"
     ]
   },
-  "taxAmount": "$.blocks[8]..paragraphs[2]..words[0].text",
   "purchaseDateTime": 
   {
     "purchaseDateTimeConfiguration": 

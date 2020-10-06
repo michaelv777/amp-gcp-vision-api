@@ -58,6 +58,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.amp.common.api.vision.handler.receipt.config.DateTimeConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
 import com.amp.common.api.vision.handler.receipt.config.SubtotalConfigurationItem;
+import com.amp.common.api.vision.handler.receipt.config.TaxRateConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.config.TotalConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.parser.ConfigurationType;
 import com.amp.common.api.vision.utils.RegexParser;
@@ -339,6 +340,9 @@ public class VisionControllerImageTest {
 	        	System.out.println( value);
 	        }
 	        */
+	        
+	        //---tax rate
+	        this.parseTaxRateWithRegex(payloadContentText,receiptConfig);
 	        
 	        //---tax amount
 	        net.minidev.json.JSONArray taxAmountArray = 
@@ -651,6 +655,61 @@ public class VisionControllerImageTest {
 	        SubtotalConfigurationItem configurationItem = null;
 			
 			for( SubtotalConfigurationItem configurationItemValue : receiptConfig.getSubtotal().getConfigurationItems() )
+			{
+				if ( configurationItemValue.getType().equalsIgnoreCase(ConfigurationType.JSON_REGEX.getConfigurationType()))
+				{
+					configurationItem = configurationItemValue;
+					
+					break;
+				}
+			}
+			
+			if ( configurationItem == null )
+			{
+				System.err.println( "configurationItem == null" );
+				
+				return ;
+			}
+	        
+	        RegexParser regexParser = new RegexParser();
+	        		
+	        String valueStr = regexParser.getGroupValueByRegex(
+	        		payloadContentText, 
+					configurationItem.getValue(), 
+					configurationItem.getMatch(), 
+					configurationItem.getGroup());
+					
+			if ( NumberUtils.isCreatable(valueStr) )
+    		{
+    			value = new BigDecimal(valueStr);
+    			
+    			System.out.println(cMethodName + "::Subtotal: " + value);
+    		}
+		}
+		catch( Exception e )
+		{
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	//---
+	protected void parseTaxRateWithRegex(
+			String payloadContentText,
+			ReceiptConfiguration receiptConfig)
+	{
+		String cMethodName = "";
+		
+		BigDecimal value = null;
+		
+		try
+		{
+			StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+	        StackTraceElement ste = stacktrace[1];
+	        cMethodName = ste.getMethodName();
+	        
+	        TaxRateConfigurationItem configurationItem = null;
+			
+			for( TaxRateConfigurationItem configurationItemValue : receiptConfig.getTaxRate().getConfigurationItems() )
 			{
 				if ( configurationItemValue.getType().equalsIgnoreCase(ConfigurationType.JSON_REGEX.getConfigurationType()))
 				{

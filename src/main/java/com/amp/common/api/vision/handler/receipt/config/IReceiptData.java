@@ -29,4 +29,9 @@ public interface IReceiptData
 			DocumentContext jsonContext, 
 			TextAnnotation receiptAnnotation,
 			ReceiptConfiguration receiptConfig);
+	
+	public BigDecimal getTaxRate(
+			DocumentContext jsonContext, 
+		   	TextAnnotation receiptAnnotation,
+		    ReceiptConfiguration receiptConfig);
 }

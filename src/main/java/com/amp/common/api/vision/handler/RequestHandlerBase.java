@@ -14,6 +14,7 @@ import com.amp.common.api.vision.handler.receipt.config.IReceiptData;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
 import com.amp.common.api.vision.handler.receipt.parser.DateTimeParser;
 import com.amp.common.api.vision.handler.receipt.parser.SubtotalParser;
+import com.amp.common.api.vision.handler.receipt.parser.TaxRateParser;
 import com.amp.common.api.vision.handler.receipt.parser.TotalParser;
 import com.amp.common.api.vision.jpa.ReceiptConfigurationM;
 import com.google.cloud.vision.v1.TextAnnotation;
@@ -77,6 +78,9 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, IRe
 	        			jsonContext, receiptAnnotation, receiptConfig));
 	        	
 	        	receiptDTO.setSubtotal(this.getSubtotal(
+	        			jsonContext, receiptAnnotation, receiptConfig));
+	        	
+	        	receiptDTO.setSalesTaxRate(this.getTaxRate(
 	        			jsonContext, receiptAnnotation, receiptConfig));
 	        }
 	        
@@ -162,6 +166,32 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, IRe
 	        cMethodName = ste.getMethodName();
 	        
 	        value = new SubtotalParser().handleData(
+	        		jsonContext, receiptAnnotation, receiptConfig);
+		}
+		catch( Exception e )
+		{
+			LOGGER.error(cMethodName + "::Exception:" + e.getMessage(), e);
+		}
+		
+		return value;
+	}
+	
+	@Override
+	public BigDecimal getTaxRate(DocumentContext jsonContext, 
+							   	 TextAnnotation receiptAnnotation,
+							   	 ReceiptConfiguration receiptConfig)
+	{
+		String cMethodName = "";
+		
+		BigDecimal value = null;
+		
+		try
+		{
+			StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+	        StackTraceElement ste = stacktrace[1];
+	        cMethodName = ste.getMethodName();
+	        
+	        value = new TaxRateParser().handleData(
 	        		jsonContext, receiptAnnotation, receiptConfig);
 		}
 		catch( Exception e )

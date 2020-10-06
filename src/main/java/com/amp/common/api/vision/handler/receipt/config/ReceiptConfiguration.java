@@ -37,6 +37,10 @@ public class ReceiptConfiguration implements Serializable
 	@Expose
 	public TotalConfiguration total;
 	
+	@SerializedName("taxRate")
+	@Expose
+	public TaxRateConfiguration taxRate;
+	
 	@SerializedName("taxAmount")
 	@Expose
 	public String taxAmount = StringUtils.EMPTY;
@@ -110,4 +114,20 @@ public class ReceiptConfiguration implements Serializable
 	public void setTaxAmount(String taxAmount) {
 		this.taxAmount = taxAmount;
 	}
+
+	/**
+	 * @return the taxRate
+	 */
+	public TaxRateConfiguration getTaxRate() {
+		return taxRate;
+	}
+
+	/**
+	 * @param taxRate the taxRate to set
+	 */
+	public void setTaxRate(TaxRateConfiguration taxRate) {
+		this.taxRate = taxRate;
+	}
+	
+	
 }
