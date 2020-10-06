@@ -31,7 +31,7 @@ public class ReceiptConfiguration implements Serializable
 	
 	@SerializedName("subtotal")
 	@Expose
-	public String subtotal = StringUtils.EMPTY;
+	public SubtotalConfiguration subtotal;
 
 	@SerializedName("total")
 	@Expose
@@ -72,14 +72,14 @@ public class ReceiptConfiguration implements Serializable
 	/**
 	 * @return the subtotal
 	 */
-	public String getSubtotal() {
+	public SubtotalConfiguration getSubtotal() {
 		return subtotal;
 	}
 
 	/**
 	 * @param subtotal the subtotal to set
 	 */
-	public void setSubtotal(String subtotal) {
+	public void setSubtotal(SubtotalConfiguration subtotal) {
 		this.subtotal = subtotal;
 	}
 

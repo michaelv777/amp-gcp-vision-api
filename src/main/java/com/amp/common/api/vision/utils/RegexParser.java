@@ -150,7 +150,7 @@ public class RegexParser
 	}
   	
   	//----
-  	public String getGroupValueByRegex(String cRegex, String cValue, int match, int group) 
+  	public String getGroupValueByRegex(String cValue, String cRegex, int match, int group) 
 	{
 		String  cMethodName = "";
   		

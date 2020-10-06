@@ -10,9 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amp.common.api.vision.dto.ReceiptDTO;
-import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
 import com.amp.common.api.vision.handler.receipt.config.IReceiptData;
+import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
 import com.amp.common.api.vision.handler.receipt.parser.DateTimeParser;
+import com.amp.common.api.vision.handler.receipt.parser.SubtotalParser;
 import com.amp.common.api.vision.jpa.ReceiptConfigurationM;
 import com.google.cloud.vision.v1.TextAnnotation;
 import com.google.gson.Gson;
@@ -69,6 +70,9 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, IRe
 	        		vendorConfig.getReceiptconfiguration(), ReceiptConfiguration.class); 
 	        	
 	        	receiptDTO.setPurchaseDate(this.getPurchaseDate(
+	        			jsonContext, receiptAnnotation, receiptConfig));
+	        	
+	        	receiptDTO.setSubtotal(this.getSubtotal(
 	        			jsonContext, receiptAnnotation, receiptConfig));
 	        }
 	        
@@ -127,7 +131,8 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, IRe
 	        StackTraceElement ste = stacktrace[1];
 	        cMethodName = ste.getMethodName();
 	        
-	        
+	        value = new SubtotalParser().handleData(
+	        		jsonContext, receiptAnnotation, receiptConfig);
 		}
 		catch( Exception e )
 		{

@@ -310,6 +310,7 @@ public class VisionControllerImageTest {
 	        this.parsePayloadDateTimeWithRegex(payloadContentText, receiptConfig);
 	        
 	        //---subtotal
+	        /*
 	        net.minidev.json.JSONArray subtotalArray = 
 	        		jsonContext.read(receiptConfig.getSubtotal());//("$.blocks[8]..paragraphs[1]..words[0].text");
 	        
@@ -319,7 +320,7 @@ public class VisionControllerImageTest {
 	        	
 	        	System.out.println( value);
 	        }
-	        
+	        */
 	        //---total
 	        net.minidev.json.JSONArray totalArray = 
 	        		jsonContext.read(receiptConfig.getTotal());//("$.blocks[8]..paragraphs[4]..words[0].text");
@@ -401,48 +402,48 @@ public class VisionControllerImageTest {
 			}
 		
 			String day = regexParser.getGroupValueByRegex(
-					configurationItem.getPurchaseDate(), 
 					payloadContentText, 
+					configurationItem.getPurchaseDate(), 
 					configurationItem.getPurchaseDateDayMatch(), 
 					configurationItem.getPurchaseDateDayGroup());
 			
 			int dayValue = (StringUtils.isNotBlank(day) &&  regexParser.isNumeric(day)) ? Integer.valueOf(day) : 0;
 					
 			String month = regexParser.getGroupValueByRegex(
-					configurationItem.getPurchaseDate(), 
 					payloadContentText, 
+					configurationItem.getPurchaseDate(), 
 					configurationItem.getPurchaseDateMonthMatch(), 
 					configurationItem.getPurchaseDateMonthGroup());
 			
 			int monthValue = (StringUtils.isNotBlank(month) &&  regexParser.isNumeric(month)) ? Integer.valueOf(month) : 0;
 			
 			String year = regexParser.getGroupValueByRegex(
-					configurationItem.getPurchaseDate(), 
 					payloadContentText, 
+					configurationItem.getPurchaseDate(), 
 					configurationItem.getPurchaseDateYearMatch(), 
 					configurationItem.getPurchaseDateYearGroup());
 			
 			int yearValue = (StringUtils.isNotBlank(year) &&  regexParser.isNumeric(year)) ? Integer.valueOf(year) : 0;
 			
 			String hour = regexParser.getGroupValueByRegex(
-					configurationItem.getPurchaseTime(), 
 					payloadContentText, 
+					configurationItem.getPurchaseTime(), 
 					configurationItem.getPurchaseTimeHourMatch(), 
 					configurationItem.getPurchaseTimeHourGroup());
 			
 			int hourValue = (StringUtils.isNotBlank(hour) &&  regexParser.isNumeric(hour)) ? Integer.valueOf(hour) : 0;
 			
 			String minute = regexParser.getGroupValueByRegex(
-					configurationItem.getPurchaseTime(), 
 					payloadContentText, 
+					configurationItem.getPurchaseTime(), 
 					configurationItem.getPurchaseTimeMinuteMatch(), 
 					configurationItem.getPurchaseTimeMinuteGroup());
 			
 			int minuteValue = (StringUtils.isNotBlank(minute) &&  regexParser.isNumeric(minute)) ? Integer.valueOf(minute) : 0;
 			
 			String ampm = regexParser.getGroupValueByRegex(
-					configurationItem.getPurchaseTime(), 
 					payloadContentText, 
+					configurationItem.getPurchaseTime(), 
 					configurationItem.getPurchaseTimeAMPMMatch(), 
 					configurationItem.getPurchaseTimeAMPMGroup());
 			
