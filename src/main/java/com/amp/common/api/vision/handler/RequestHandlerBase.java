@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amp.common.api.vision.dto.ReceiptDTO;
-import com.amp.common.api.vision.handler.receipt.config.IReceiptData;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
 import com.amp.common.api.vision.handler.receipt.parser.DateTimeParser;
 import com.amp.common.api.vision.handler.receipt.parser.SubtotalParser;
