@@ -43,6 +43,10 @@ public class ReceiptConfiguration implements Serializable
 	@Expose
 	public TaxAmountConfiguration taxAmount;
 	
+	@SerializedName("store")
+	@Expose
+	public StoreConfiguration store;
+	
 	/**
 	 * @return the purchaseDateTime
 	 */
@@ -125,5 +129,19 @@ public class ReceiptConfiguration implements Serializable
 	 */
 	public void setTaxAmount(TaxAmountConfiguration taxAmount) {
 		this.taxAmount = taxAmount;
+	}
+
+	/**
+	 * @return the store
+	 */
+	public StoreConfiguration getStore() {
+		return store;
+	}
+
+	/**
+	 * @param store the store to set
+	 */
+	public void setStore(StoreConfiguration store) {
+		this.store = store;
 	}
 }

@@ -150,12 +150,9 @@ public class RegexParser
 	}
   	
   	//----
-  	public String getGroupValueByRegex(String cValue, String cRegex, int match, int group) 
+  	public String getGroupValueByRegex(String cValue, String cRegex, int match, int group, boolean... flags) 
 	{
 		String  cMethodName = "";
-  		
-		@SuppressWarnings("unused")
-		boolean cRetVal = false;
 		
 		String cGroupVal = StringUtils.EMPTY;
 		
@@ -165,6 +162,12 @@ public class RegexParser
 	        StackTraceElement ste = stacktrace[1];
 	        cMethodName = ste.getMethodName();
       		
+	        boolean isLowerCase = (flags.length >= 1) ? flags[0] : false;
+	        if ( isLowerCase )
+	        {
+	        	cValue = cValue.toLowerCase();
+	        }
+	        
 	        Pattern r = Pattern.compile(cRegex, Pattern.DOTALL);
 			
 	        Matcher m = r.matcher(cValue);

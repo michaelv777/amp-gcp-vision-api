@@ -23,20 +23,20 @@ public class SubtotalConfiguration implements Serializable
 	
 	@SerializedName("subtotalConfigutation")
 	@Expose
-	public List<SubtotalConfigurationItem> configurationItems = 
-		new ArrayList<SubtotalConfigurationItem>();
+	public List<ConfigurationItem> configurationItems = 
+		new ArrayList<ConfigurationItem>();
 
 	/**
 	 * @return the configurationItems
 	 */
-	public List<SubtotalConfigurationItem> getConfigurationItems() {
+	public List<ConfigurationItem> getConfigurationItems() {
 		return configurationItems;
 	}
 
 	/**
 	 * @param configurationItems the configurationItems to set
 	 */
-	public void setConfigurationItems(List<SubtotalConfigurationItem> configurationItems) {
+	public void setConfigurationItems(List<ConfigurationItem> configurationItems) {
 		this.configurationItems = configurationItems;
 	}
 	

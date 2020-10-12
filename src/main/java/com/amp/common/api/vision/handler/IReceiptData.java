@@ -6,6 +6,7 @@ package com.amp.common.api.vision.handler;
 import java.math.BigDecimal;
 import java.time.Instant;
 
+import com.amp.common.api.vision.dto.StoreDTO;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
 import com.google.cloud.vision.v1.TextAnnotation;
 import com.jayway.jsonpath.DocumentContext;
@@ -40,4 +41,9 @@ public interface IReceiptData
 			 DocumentContext jsonContext, 
 		   	 TextAnnotation receiptAnnotation,
 		   	 ReceiptConfiguration receiptConfig);
+	
+	public StoreDTO getStore(
+			DocumentContext jsonContext, 
+			TextAnnotation receiptAnnotation,
+			ReceiptConfiguration receiptConfig);
 }

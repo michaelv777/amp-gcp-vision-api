@@ -35,8 +35,7 @@
         "value": "$.blocks[8]..paragraphs[1]..words[0].text"
       }
     ]
-  }
-  ,
+  },
   "taxRate": 
   {
     "taxRateConfigutation":
@@ -66,6 +65,40 @@
         "type": "json_path",
         "priority": 2,
         "value": "$.blocks[8]..paragraphs[2]..words[0].text"
+      }
+    ]
+  }
+  ,
+  "store":
+  {
+    "streetAddressConfiguration":
+    [
+      {
+        "type": "json_regex",
+        "priority": 1,
+        "value": "(?:.*)(?:\\s{1,})((\\d{1,}|\\d{1,}-\\d{1,})(.*)(?=\\bavenue\\b|\\blane\\b|\\broad\\b|\\bboulevard\\b|\\bdrive\\b|\\bstreet\\b|\\bave\\b|\\bdr\\b|\\brd\\b|\\bblvd\\b|\\bln\\b|\\bst\\b|\\bpkwy\\b|\\bcircle\\b)(\\bavenue\\b|\\blane\\b|\\broad\\b|\\bboulevard\\b|\\bdrive\\b|\\bstreet\\b|\\bave\\b|\\bdr\\b|\\brd\\b|\\bblvd\\b|\\bln\\b|\\bst\\b|\\bpkwy\\b|\\bcircle\\b))(?:.*)",
+        "match": 1,
+        "group": 1
+      }
+    ],
+    "streetNumberConfiguration":
+    [
+      {
+        "type": "json_regex",
+        "priority": 1,
+        "value": "(?:.*)(?:\\s{1,})((\\d{1,}|\\d{1,}-\\d{1,})(.*)(?=\\bavenue\\b|\\blane\\b|\\broad\\b|\\bboulevard\\b|\\bdrive\\b|\\bstreet\\b|\\bave\\b|\\bdr\\b|\\brd\\b|\\bblvd\\b|\\bln\\b|\\bst\\b|\\bpkwy\\b|\\bcircle\\b)(\\bavenue\\b|\\blane\\b|\\broad\\b|\\bboulevard\\b|\\bdrive\\b|\\bstreet\\b|\\bave\\b|\\bdr\\b|\\brd\\b|\\bblvd\\b|\\bln\\b|\\bst\\b|\\bpkwy\\b|\\bcircle\\b))(?:.*)",
+        "match": 1,
+        "group": 2
+      }
+    ],
+    "streetNameConfiguration":
+    [
+      {
+        "type": "json_regex",
+        "priority": 1,
+        "value": "(?:.*)(?:\\s{1,})((\\d{1,}|\\d{1,}-\\d{1,})(.*)(?=\\bavenue\\b|\\blane\\b|\\broad\\b|\\bboulevard\\b|\\bdrive\\b|\\bstreet\\b|\\bave\\b|\\bdr\\b|\\brd\\b|\\bblvd\\b|\\bln\\b|\\bst\\b|\\bpkwy\\b|\\bcircle\\b)(\\bavenue\\b|\\blane\\b|\\broad\\b|\\bboulevard\\b|\\bdrive\\b|\\bstreet\\b|\\bave\\b|\\bdr\\b|\\brd\\b|\\bblvd\\b|\\bln\\b|\\bst\\b|\\bpkwy\\b|\\bcircle\\b))(?:.*)",
+        "match": 1,
+        "group": 3
       }
     ]
   }

@@ -40,7 +40,6 @@ public class ReceiptDTO implements Serializable {
     @DecimalMin(value = "0")
     private BigDecimal total;
 
-
     private StoreDTO store;
     
     private Set<ReceiptItemDTO> receiptItems;

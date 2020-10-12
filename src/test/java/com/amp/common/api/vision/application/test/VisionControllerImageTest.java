@@ -55,9 +55,10 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.amp.common.api.vision.dto.StoreDTO;
+import com.amp.common.api.vision.handler.receipt.config.ConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.config.DateTimeConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
-import com.amp.common.api.vision.handler.receipt.config.SubtotalConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.config.TaxAmountConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.config.TaxRateConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.config.TotalConfigurationItem;
@@ -347,6 +348,10 @@ public class VisionControllerImageTest {
 	        
 	        //---tax amountc
 	        this.parseTaxAmountWithRegex(payloadContentText,receiptConfig);
+	        
+	        //---store
+	        this.parseStoreWithRegex(payloadContentText, receiptConfig);
+	        
 	        /*
 	        net.minidev.json.JSONArray taxAmountArray = 
 	        		jsonContext.read(receiptConfig.getTaxAmount());//("$.blocks[8]..paragraphs[3]..words[0].text");
@@ -655,9 +660,9 @@ public class VisionControllerImageTest {
 	        StackTraceElement ste = stacktrace[1];
 	        cMethodName = ste.getMethodName();
 	        
-	        SubtotalConfigurationItem configurationItem = null;
+	        ConfigurationItem configurationItem = null;
 			
-			for( SubtotalConfigurationItem configurationItemValue : receiptConfig.getSubtotal().getConfigurationItems() )
+			for( ConfigurationItem configurationItemValue : receiptConfig.getSubtotal().getConfigurationItems() )
 			{
 				if ( configurationItemValue.getType().equalsIgnoreCase(ConfigurationType.JSON_REGEX.getConfigurationType()))
 				{
@@ -798,6 +803,60 @@ public class VisionControllerImageTest {
     			
     			System.out.println(cMethodName + "::Subtotal: " + value);
     		}
+		}
+		catch( Exception e )
+		{
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	//---
+	protected void parseStoreWithRegex(
+			String payloadContentText,
+			ReceiptConfiguration receiptConfig)
+	{
+		String cMethodName = "";
+		
+		StoreDTO value = new StoreDTO();
+		
+		try
+		{
+			StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+	        StackTraceElement ste = stacktrace[1];
+	        cMethodName = ste.getMethodName();
+	        
+	        ConfigurationItem configurationItem = null;
+			
+			for( ConfigurationItem configurationItemValue : receiptConfig.getStore().getConfigurationItemsStreetAddress() )
+			{
+				if ( configurationItemValue.getType().equalsIgnoreCase(ConfigurationType.JSON_REGEX.getConfigurationType()))
+				{
+					configurationItem = configurationItemValue;
+					
+					break;
+				}
+			}
+			
+			if ( configurationItem == null )
+			{
+				System.err.println( "configurationItem == null" );
+				
+				return ;
+			}
+	        
+	        RegexParser regexParser = new RegexParser();
+	        		
+	        String address1 = regexParser.getGroupValueByRegex(
+	        		payloadContentText, 
+					configurationItem.getValue(), 
+					configurationItem.getMatch(), 
+					configurationItem.getGroup(),
+					true);
+    		
+			value.setAddress1(address1);
+			//---
+			
+			System.out.println(cMethodName + "::Address1: " + value.getAddress1());
 		}
 		catch( Exception e )
 		{

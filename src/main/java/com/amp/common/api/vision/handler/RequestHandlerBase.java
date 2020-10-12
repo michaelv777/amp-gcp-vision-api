@@ -10,8 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amp.common.api.vision.dto.ReceiptDTO;
+import com.amp.common.api.vision.dto.StoreDTO;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
 import com.amp.common.api.vision.handler.receipt.parser.DateTimeParser;
+import com.amp.common.api.vision.handler.receipt.parser.StoreParser;
 import com.amp.common.api.vision.handler.receipt.parser.SubtotalParser;
 import com.amp.common.api.vision.handler.receipt.parser.TaxAmountParser;
 import com.amp.common.api.vision.handler.receipt.parser.TaxRateParser;
@@ -84,6 +86,9 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, IRe
 	        			jsonContext, receiptAnnotation, receiptConfig));
 	        	
 	        	receiptDTO.setTaxAmount(this.getTaxAmount(
+	        			jsonContext, receiptAnnotation, receiptConfig));
+	        	
+	        	receiptDTO.setStore(this.getStore(
 	        			jsonContext, receiptAnnotation, receiptConfig));
 	        }
 	        
@@ -221,6 +226,32 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, IRe
 	        cMethodName = ste.getMethodName();
 	        
 	        value = new TaxAmountParser().handleData(
+	        		jsonContext, receiptAnnotation, receiptConfig);
+		}
+		catch( Exception e )
+		{
+			LOGGER.error(cMethodName + "::Exception:" + e.getMessage(), e);
+		}
+		
+		return value;
+	}
+	
+	@Override
+	public StoreDTO getStore(DocumentContext jsonContext, 
+							 TextAnnotation receiptAnnotation,
+							 ReceiptConfiguration receiptConfig)
+	{
+		String cMethodName = "";
+		
+		StoreDTO value = null;
+		
+		try
+		{
+			StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+	        StackTraceElement ste = stacktrace[1];
+	        cMethodName = ste.getMethodName();
+	        
+	        value = new StoreParser().handleData(
 	        		jsonContext, receiptAnnotation, receiptConfig);
 		}
 		catch( Exception e )
