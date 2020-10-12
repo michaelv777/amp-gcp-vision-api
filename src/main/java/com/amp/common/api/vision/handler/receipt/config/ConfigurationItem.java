@@ -131,10 +131,10 @@ public class ConfigurationItem implements Serializable
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof SubtotalConfigurationItem)) {
+		if (!(obj instanceof ConfigurationItem)) {
 			return false;
 		}
-		SubtotalConfigurationItem other = (SubtotalConfigurationItem) obj;
+		ConfigurationItem other = (ConfigurationItem) obj;
 		if (priority == null) {
 			if (other.priority != null) {
 				return false;

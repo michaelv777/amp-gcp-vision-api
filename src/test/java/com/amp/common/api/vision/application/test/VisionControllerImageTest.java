@@ -59,9 +59,6 @@ import com.amp.common.api.vision.dto.StoreDTO;
 import com.amp.common.api.vision.handler.receipt.config.ConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.config.DateTimeConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
-import com.amp.common.api.vision.handler.receipt.config.TaxAmountConfigurationItem;
-import com.amp.common.api.vision.handler.receipt.config.TaxRateConfigurationItem;
-import com.amp.common.api.vision.handler.receipt.config.TotalConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.parser.ConfigurationType;
 import com.amp.common.api.vision.utils.RegexParser;
 import com.google.cloud.vision.v1.AnnotateImageRequest;
@@ -605,9 +602,9 @@ public class VisionControllerImageTest {
 	        StackTraceElement ste = stacktrace[1];
 	        cMethodName = ste.getMethodName();
 	        
-	        TotalConfigurationItem configurationItem = null;
+	        ConfigurationItem configurationItem = null;
 			
-			for( TotalConfigurationItem configurationItemValue : receiptConfig.getTotal().getConfigurationItems() )
+			for( ConfigurationItem configurationItemValue : receiptConfig.getTotal().getConfigurationItems() )
 			{
 				if ( configurationItemValue.getType().equalsIgnoreCase(ConfigurationType.JSON_REGEX.getConfigurationType()))
 				{
@@ -715,9 +712,9 @@ public class VisionControllerImageTest {
 	        StackTraceElement ste = stacktrace[1];
 	        cMethodName = ste.getMethodName();
 	        
-	        TaxRateConfigurationItem configurationItem = null;
+	        ConfigurationItem configurationItem = null;
 			
-			for( TaxRateConfigurationItem configurationItemValue : receiptConfig.getTaxRate().getConfigurationItems() )
+			for( ConfigurationItem configurationItemValue : receiptConfig.getTaxRate().getConfigurationItems() )
 			{
 				if ( configurationItemValue.getType().equalsIgnoreCase(ConfigurationType.JSON_REGEX.getConfigurationType()))
 				{
@@ -770,9 +767,9 @@ public class VisionControllerImageTest {
 	        StackTraceElement ste = stacktrace[1];
 	        cMethodName = ste.getMethodName();
 	        
-	        TaxAmountConfigurationItem configurationItem = null;
+	        ConfigurationItem configurationItem = null;
 			
-			for( TaxAmountConfigurationItem configurationItemValue : receiptConfig.getTaxAmount().getConfigurationItems() )
+			for( ConfigurationItem configurationItemValue : receiptConfig.getTaxAmount().getConfigurationItems() )
 			{
 				if ( configurationItemValue.getType().equalsIgnoreCase(ConfigurationType.JSON_REGEX.getConfigurationType()))
 				{

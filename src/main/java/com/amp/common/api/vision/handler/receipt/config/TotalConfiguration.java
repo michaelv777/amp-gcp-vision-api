@@ -23,20 +23,20 @@ public class TotalConfiguration implements Serializable
 	
 	@SerializedName("totalConfigutation")
 	@Expose
-	public List<TotalConfigurationItem> configurationItems = 
-		new ArrayList<TotalConfigurationItem>();
+	public List<ConfigurationItem> configurationItems = 
+		new ArrayList<ConfigurationItem>();
 
 	/**
 	 * @return the configurationItems
 	 */
-	public List<TotalConfigurationItem> getConfigurationItems() {
+	public List<ConfigurationItem> getConfigurationItems() {
 		return configurationItems;
 	}
 
 	/**
 	 * @param configurationItems the configurationItems to set
 	 */
-	public void setConfigurationItems(List<TotalConfigurationItem> configurationItems) {
+	public void setConfigurationItems(List<ConfigurationItem> configurationItems) {
 		this.configurationItems = configurationItems;
 	}
 	

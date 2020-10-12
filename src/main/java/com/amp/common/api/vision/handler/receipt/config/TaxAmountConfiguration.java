@@ -23,20 +23,20 @@ public class TaxAmountConfiguration implements Serializable
 	
 	@SerializedName("taxAmountConfigutation")
 	@Expose
-	public List<TaxAmountConfigurationItem> configurationItems = 
-		new ArrayList<TaxAmountConfigurationItem>();
+	public List<ConfigurationItem> configurationItems = 
+		new ArrayList<ConfigurationItem>();
 
 	/**
 	 * @return the configurationItems
 	 */
-	public List<TaxAmountConfigurationItem> getConfigurationItems() {
+	public List<ConfigurationItem> getConfigurationItems() {
 		return configurationItems;
 	}
 
 	/**
 	 * @param configurationItems the configurationItems to set
 	 */
-	public void setConfigurationItems(List<TaxAmountConfigurationItem> configurationItems) {
+	public void setConfigurationItems(List<ConfigurationItem> configurationItems) {
 		this.configurationItems = configurationItems;
 	}
 	
