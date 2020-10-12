@@ -292,7 +292,8 @@ public class VisionControllerImageTest {
 	        String      payloadContentJson = new String(Files.readAllBytes(Paths.get(absolutePathPayloadJson)));
 	        JSONObject  receiptPayload = new JSONObject(payloadContentJson);
 	        
-	        DocumentContext jsonContext = JsonPath.
+	        @SuppressWarnings("unused")
+			DocumentContext jsonContext = JsonPath.
 	        		using(Configuration.defaultConfiguration()).
 	        		parse(receiptPayload.toString());
 	        
@@ -346,9 +347,6 @@ public class VisionControllerImageTest {
 	        //---tax amountc
 	        this.parseTaxAmountWithRegex(payloadContentText,receiptConfig);
 	        
-	        //---store
-	        this.parseStoreWithRegex(payloadContentText, receiptConfig);
-	        
 	        /*
 	        net.minidev.json.JSONArray taxAmountArray = 
 	        		jsonContext.read(receiptConfig.getTaxAmount());//("$.blocks[8]..paragraphs[3]..words[0].text");
@@ -360,13 +358,19 @@ public class VisionControllerImageTest {
 	        	System.out.println( value);
 	        }
 	        */
+	        //---store
+	        this.parseStoreWithRegex(payloadContentText, receiptConfig);
+	        
 	        //---items data
+	        this.parseItemsWithRegex(payloadContentText, receiptConfig);
+	        /*
 	        for( String itemsDetailsPath : receiptConfig.getItemsData().getItemsDetails())
 	        {
 		        net.minidev.json.JSONArray itemsCodesArray = jsonContext.read(itemsDetailsPath);
 		        
 		        System.out.println(itemsCodesArray.toString());
 	        }
+	        */
 		}
 		catch(PathNotFoundException e) 
 		{
@@ -940,6 +944,53 @@ public class VisionControllerImageTest {
 			value.setPostalCode(postalCode);
 			
 			System.out.println(cMethodName + "::postalCode: " + value.getPostalCode());
+		}
+		catch( Exception e )
+		{
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	//---
+	protected void parseItemsWithRegex(
+			String payloadContentText,
+			ReceiptConfiguration receiptConfig)
+	{
+		String cMethodName = "";
+		
+		try
+		{
+			StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+	        StackTraceElement ste = stacktrace[1];
+	        cMethodName = ste.getMethodName();
+	        
+	        ConfigurationItem configurationItem = null;
+			
+			for( ConfigurationItem configurationItemValue : receiptConfig.getItemsData().getItemsDetails() )
+			{
+				if ( configurationItemValue.getType().equalsIgnoreCase(ConfigurationType.JSON_REGEX.getConfigurationType()))
+				{
+					configurationItem = configurationItemValue;
+					
+					break;
+				}
+			}
+			
+			if ( configurationItem == null )
+			{
+				System.err.println( "configurationItem == null" );
+				
+				return ;
+			}
+	        
+	        RegexParser regexParser = new RegexParser();
+	        
+	        List<String> values = regexParser.getGroupValuesByRegex(
+	        		payloadContentText, 
+					configurationItem.getValue(), 
+					configurationItem.getGroup());
+			
+			System.out.println(cMethodName + "::Iems: " + values);
 		}
 		catch( Exception e )
 		{

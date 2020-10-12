@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amp.common.api.vision.dto.StoreDTO;
-import com.amp.common.api.vision.handler.RequestHandlerBase;
 import com.amp.common.api.vision.handler.receipt.config.ConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
 import com.google.cloud.vision.v1.TextAnnotation;
@@ -24,7 +23,7 @@ import com.jayway.jsonpath.DocumentContext;
 public class StoreParser extends AbstractParser
 {
 	private static final Logger LOGGER = 
-			LoggerFactory.getLogger(RequestHandlerBase.class);
+			LoggerFactory.getLogger(StoreParser.class);
 	
 	public StoreDTO handleData(
 			DocumentContext jsonContext, 

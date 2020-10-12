@@ -5,14 +5,17 @@ package com.amp.common.api.vision.handler;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amp.common.api.vision.dto.ReceiptDTO;
+import com.amp.common.api.vision.dto.ReceiptItemDTO;
 import com.amp.common.api.vision.dto.StoreDTO;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
 import com.amp.common.api.vision.handler.receipt.parser.DateTimeParser;
+import com.amp.common.api.vision.handler.receipt.parser.ItemsDataParser;
 import com.amp.common.api.vision.handler.receipt.parser.StoreParser;
 import com.amp.common.api.vision.handler.receipt.parser.SubtotalParser;
 import com.amp.common.api.vision.handler.receipt.parser.TaxAmountParser;
@@ -89,6 +92,9 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, IRe
 	        			jsonContext, receiptAnnotation, receiptConfig));
 	        	
 	        	receiptDTO.setStore(this.getStore(
+	        			jsonContext, receiptAnnotation, receiptConfig));
+	        	
+	        	receiptDTO.setReceiptItems(this.getItems(
 	        			jsonContext, receiptAnnotation, receiptConfig));
 	        }
 	        
@@ -252,6 +258,32 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, IRe
 	        cMethodName = ste.getMethodName();
 	        
 	        value = new StoreParser().handleData(
+	        		jsonContext, receiptAnnotation, receiptConfig);
+		}
+		catch( Exception e )
+		{
+			LOGGER.error(cMethodName + "::Exception:" + e.getMessage(), e);
+		}
+		
+		return value;
+	}
+	
+	@Override
+	public Set<ReceiptItemDTO> getItems(DocumentContext jsonContext, 
+							 TextAnnotation receiptAnnotation,
+							 ReceiptConfiguration receiptConfig)
+	{
+		String cMethodName = "";
+		
+		Set<ReceiptItemDTO> value = null;
+		
+		try
+		{
+			StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+	        StackTraceElement ste = stacktrace[1];
+	        cMethodName = ste.getMethodName();
+	        
+	        value = new ItemsDataParser().handleData(
 	        		jsonContext, receiptAnnotation, receiptConfig);
 		}
 		catch( Exception e )

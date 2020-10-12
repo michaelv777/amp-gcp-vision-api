@@ -3,6 +3,8 @@
  */
 package com.amp.common.api.vision.utils;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -200,6 +202,47 @@ public class RegexParser
   			
       		return cGroupVal;
   		}
+	}
+  	
+  	//----
+  	public List<String> getGroupValuesByRegex(String cValue, String cRegex, int group, boolean... flags) 
+	{
+		String  cMethodName = "";
+		
+		List<String> cGroupVals = new LinkedList<String>();
+		
+  		try
+  		{
+  			StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+	        StackTraceElement ste = stacktrace[1];
+	        cMethodName = ste.getMethodName();
+      		
+	        boolean isLowerCase = (flags.length >= 1) ? flags[0] : false;
+	        if ( isLowerCase )
+	        {
+	        	cValue = cValue.toLowerCase();
+	        }
+	        
+	        Pattern r = Pattern.compile(cRegex, Pattern.DOTALL);
+			
+	        Matcher m = r.matcher(cValue);
+
+	        while (m.find()) 
+	        {
+				String cGroupVal = m.group(group);
+				
+				if ( cGroupVal != null )
+				{
+					cGroupVals.add(cGroupVal);
+				}
+	        }
+  		}
+  		catch( Exception e)
+  		{
+  			cLogger.error(cMethodName + ":" + e.getMessage(), e);
+  		}
+  		
+  		return cGroupVals;
 	}
   	
   	public boolean isNumeric(String s) 

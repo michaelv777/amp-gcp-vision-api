@@ -23,37 +23,37 @@ public class ItemsDataConfiguration implements Serializable
 	
 	@SerializedName("itemsDetails")
 	@Expose
-	public List<String> itemsDetails = new ArrayList<String>();
+	public List<ConfigurationItem> itemsDetails = new ArrayList<ConfigurationItem>();
 
 	@SerializedName("itemsPrices")
 	@Expose
-	public List<String> itemsPrices = new ArrayList<String>();
+	public List<ConfigurationItem> itemsPrices = new ArrayList<ConfigurationItem>();
 
 	/**
 	 * @return the itemsDetails
 	 */
-	public List<String> getItemsDetails() {
+	public List<ConfigurationItem> getItemsDetails() {
 		return itemsDetails;
 	}
 
 	/**
 	 * @param itemsDetails the itemsDetails to set
 	 */
-	public void setItemsDetails(List<String> itemsDetails) {
+	public void setItemsDetails(List<ConfigurationItem> itemsDetails) {
 		this.itemsDetails = itemsDetails;
 	}
 
 	/**
 	 * @return the itemsPrices
 	 */
-	public List<String> getItemsPrices() {
+	public List<ConfigurationItem> getItemsPrices() {
 		return itemsPrices;
 	}
 
 	/**
 	 * @param itemsPrices the itemsPrices to set
 	 */
-	public void setItemsPrices(List<String> itemsPrices) {
+	public void setItemsPrices(List<ConfigurationItem> itemsPrices) {
 		this.itemsPrices = itemsPrices;
 	}
 }

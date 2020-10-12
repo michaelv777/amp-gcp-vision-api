@@ -10,7 +10,6 @@ import java.util.TreeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amp.common.api.vision.handler.RequestHandlerBase;
 import com.amp.common.api.vision.handler.receipt.config.ConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
 import com.google.cloud.vision.v1.TextAnnotation;
@@ -23,7 +22,7 @@ import com.jayway.jsonpath.DocumentContext;
 public class TaxAmountParser extends AbstractParser
 {
 	private static final Logger LOGGER = 
-			LoggerFactory.getLogger(RequestHandlerBase.class);
+			LoggerFactory.getLogger(TaxAmountParser.class);
 	
 	public BigDecimal handleData(
 			DocumentContext jsonContext, 

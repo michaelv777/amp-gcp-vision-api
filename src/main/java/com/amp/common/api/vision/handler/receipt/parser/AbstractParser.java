@@ -4,6 +4,8 @@
 package com.amp.common.api.vision.handler.receipt.parser;
 
 import java.math.BigDecimal;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
@@ -106,6 +108,47 @@ public class AbstractParser implements IDataParser
 		return value;
 	}
 	
+	//---
+	public List<String> handleStringsListDataWithJsonRegex(
+			TextAnnotation receiptAnnotation,
+			ConfigurationItem configurationItem,
+			boolean... flags)
+	{
+		String cMethodName = "";
+		
+		List<String> values = new LinkedList<String>();
+		
+		try
+		{
+			StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+	        StackTraceElement ste = stacktrace[1];
+	        cMethodName = ste.getMethodName();
+	        
+	        if ( receiptAnnotation == null || configurationItem == null )
+	        {
+	        	LOGGER.error(cMethodName + "::Error: NULL parameters");
+	        	
+	        	return values;
+	        }
+	        
+	        RegexParser regexParser = new RegexParser();
+	        
+	        String payloadContentText = receiptAnnotation.getText();
+	        		
+	        values = regexParser.getGroupValuesByRegex(
+	        		payloadContentText, 
+					configurationItem.getValue(), 
+					configurationItem.getGroup(),
+					flags);
+		}
+		catch( Exception e )
+		{
+			LOGGER.error(cMethodName + "::Exception:" + e.getMessage(), e);
+		}
+		
+		return values;
+	}
+		
 	//---
 	public BigDecimal handleDecimalDataWithJsonPath(
 			DocumentContext jsonContext, 

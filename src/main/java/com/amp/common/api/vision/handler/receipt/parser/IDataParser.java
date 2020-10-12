@@ -4,6 +4,7 @@
 package com.amp.common.api.vision.handler.receipt.parser;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.amp.common.api.vision.handler.receipt.config.ConfigurationItem;
 import com.google.cloud.vision.v1.TextAnnotation;
@@ -31,5 +32,10 @@ public interface IDataParser
 	public BigDecimal handleDecimalDataWithJsonRegex(
 			TextAnnotation receiptAnnotation,
 			ConfigurationItem configurationItem, 
+			boolean... flags);
+	
+	public List<String> handleStringsListDataWithJsonRegex(
+			TextAnnotation receiptAnnotation,
+			ConfigurationItem configurationItem,
 			boolean... flags);
 }

@@ -160,14 +160,34 @@
     ]
   }
   ,
-  "itemsData": {
-    "itemsPrices": [
-      "$.blocks[7]..paragraphs[0]..words[*].text"
-    ],
-    "itemsDetails": [
-      "$.blocks[6]..paragraphs[0]..words[*].text"
+  "itemsData":
+  {
+    "itemsPrices": 
+    [
+      {   
+        "type": "json_path",
+        "priority": 2,
+        "value": "$.blocks[7]..paragraphs[0]..words[*].text"
+      }
     ]
-  },
+    ,  
+    "itemsDetails": 
+    [
+      {
+        "type": "json_regex",
+        "priority": 1,
+        "value": "(?:.*?)(\\d{12}[\\S\\s]*<A>)(?:.*?)",
+        "match": 1,
+        "group": 1
+      },
+      {   
+        "type": "json_path",
+        "priority": 2,
+        "value": "$.blocks[6]..paragraphs[0]..words[*].text"
+      }
+    ]
+  }
+  ,
   "purchaseDateTime": 
   {
     "purchaseDateTimeConfiguration": 

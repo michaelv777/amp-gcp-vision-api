@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amp.common.api.vision.handler.RequestHandlerBase;
 import com.amp.common.api.vision.handler.receipt.config.DateTimeConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
 import com.amp.common.api.vision.utils.RegexParser;
@@ -30,7 +29,7 @@ import com.jayway.jsonpath.DocumentContext;
 public class DateTimeParser 
 {
 	private static final Logger LOGGER = 
-			LoggerFactory.getLogger(RequestHandlerBase.class);
+			LoggerFactory.getLogger(DateTimeParser.class);
 	
 	public Instant handleData(
 			DocumentContext jsonContext, 
