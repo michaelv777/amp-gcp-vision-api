@@ -22,7 +22,8 @@ public class AbstractParser implements IDataParser
 {
 	private static final Logger LOGGER = 
 			LoggerFactory.getLogger(AbstractParser.class);
-	
+
+	protected final String PARSER_VALUE_NOT_FOUND = "NA";
 	//---
 	public String handleStringDataWithJsonPath(
 			DocumentContext jsonContext, 

@@ -21,6 +21,11 @@ public class StoreConfiguration implements Serializable
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	@SerializedName("nameConfiguration")
+	@Expose
+	public List<ConfigurationItem> nameConfiguration = 
+		new ArrayList<ConfigurationItem>();
+	
 	@SerializedName("streetAddressConfiguration")
 	@Expose
 	public List<ConfigurationItem> configurationItemsStreetAddress = 
@@ -34,6 +39,26 @@ public class StoreConfiguration implements Serializable
 	@SerializedName("streetNameConfiguration")
 	@Expose
 	public List<ConfigurationItem> configurationItemsStreetName = 
+		new ArrayList<ConfigurationItem>();
+	
+	@SerializedName("cityConfiguration")
+	@Expose
+	public List<ConfigurationItem> cityConfiguration = 
+		new ArrayList<ConfigurationItem>();
+	
+	@SerializedName("provinceConfiguration")
+	@Expose
+	public List<ConfigurationItem> provinceConfiguration = 
+		new ArrayList<ConfigurationItem>();
+	
+	@SerializedName("postalCodeConfiguration")
+	@Expose
+	public List<ConfigurationItem> postalCodeConfiguration = 
+		new ArrayList<ConfigurationItem>();
+	
+	@SerializedName("countryConfiguration")
+	@Expose
+	public List<ConfigurationItem> countryConfiguration = 
 		new ArrayList<ConfigurationItem>();
 	
 	/**
@@ -76,5 +101,75 @@ public class StoreConfiguration implements Serializable
 	 */
 	public void setConfigurationItemsStreetAddress(List<ConfigurationItem> configurationItemsStreetAddress) {
 		this.configurationItemsStreetAddress = configurationItemsStreetAddress;
+	}
+
+	/**
+	 * @return the cityConfiguration
+	 */
+	public List<ConfigurationItem> getCityConfiguration() {
+		return cityConfiguration;
+	}
+
+	/**
+	 * @param cityConfiguration the cityConfiguration to set
+	 */
+	public void setCityConfiguration(List<ConfigurationItem> cityConfiguration) {
+		this.cityConfiguration = cityConfiguration;
+	}
+
+	/**
+	 * @return the provinceConfiguration
+	 */
+	public List<ConfigurationItem> getProvinceConfiguration() {
+		return provinceConfiguration;
+	}
+
+	/**
+	 * @param provinceConfiguration the provinceConfiguration to set
+	 */
+	public void setProvinceConfiguration(List<ConfigurationItem> provinceConfiguration) {
+		this.provinceConfiguration = provinceConfiguration;
+	}
+
+	/**
+	 * @return the postalCodeConfiguration
+	 */
+	public List<ConfigurationItem> getPostalCodeConfiguration() {
+		return postalCodeConfiguration;
+	}
+
+	/**
+	 * @param postalCodeConfiguration the postalCodeConfiguration to set
+	 */
+	public void setPostalCodeConfiguration(List<ConfigurationItem> postalCodeConfiguration) {
+		this.postalCodeConfiguration = postalCodeConfiguration;
+	}
+
+	/**
+	 * @return the countryConfiguration
+	 */
+	public List<ConfigurationItem> getCountryConfiguration() {
+		return countryConfiguration;
+	}
+
+	/**
+	 * @param countryConfiguration the countryConfiguration to set
+	 */
+	public void setCountryConfiguration(List<ConfigurationItem> countryConfiguration) {
+		this.countryConfiguration = countryConfiguration;
+	}
+
+	/**
+	 * @return the nameConfiguration
+	 */
+	public List<ConfigurationItem> getNameConfiguration() {
+		return nameConfiguration;
+	}
+
+	/**
+	 * @param nameConfiguration the nameConfiguration to set
+	 */
+	public void setNameConfiguration(List<ConfigurationItem> nameConfiguration) {
+		this.nameConfiguration = nameConfiguration;
 	}
 }

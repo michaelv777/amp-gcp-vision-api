@@ -56,6 +56,4 @@ public class ItemsDataConfiguration implements Serializable
 	public void setItemsPrices(List<String> itemsPrices) {
 		this.itemsPrices = itemsPrices;
 	}
-	
-	
 }

@@ -851,9 +851,95 @@ public class VisionControllerImageTest {
 					true);
     		
 			value.setAddress1(address1);
-			//---
 			
 			System.out.println(cMethodName + "::Address1: " + value.getAddress1());
+			//---city
+			configurationItem = null;
+			for( ConfigurationItem configurationItemValue : receiptConfig.getStore().getCityConfiguration() )
+			{
+				if ( configurationItemValue.getType().equalsIgnoreCase(ConfigurationType.JSON_REGEX.getConfigurationType()))
+				{
+					configurationItem = configurationItemValue;
+					
+					break;
+				}
+			}
+			
+			if ( configurationItem == null )
+			{
+				System.err.println( "configurationItem == null" );
+				
+				return ;
+			}
+	        		
+	        String city = regexParser.getGroupValueByRegex(
+	        		payloadContentText, 
+					configurationItem.getValue(), 
+					configurationItem.getMatch(), 
+					configurationItem.getGroup(),
+					true);
+    		
+			value.setCity(city);
+			
+			System.out.println(cMethodName + "::city: " + value.getCity());
+			
+			//---province
+			configurationItem = null;
+			for( ConfigurationItem configurationItemValue : receiptConfig.getStore().getProvinceConfiguration())
+			{
+				if ( configurationItemValue.getType().equalsIgnoreCase(ConfigurationType.JSON_REGEX.getConfigurationType()))
+				{
+					configurationItem = configurationItemValue;
+					
+					break;
+				}
+			}
+			
+			if ( configurationItem == null )
+			{
+				System.err.println( "configurationItem == null" );
+				
+				return ;
+			}
+	        		
+	        String province = regexParser.getGroupValueByRegex(
+	        		payloadContentText, 
+					configurationItem.getValue(), 
+					configurationItem.getMatch(), 
+					configurationItem.getGroup());
+    		
+			value.setProvince(province);
+			
+			System.out.println(cMethodName + "::province: " + value.getProvince());
+			
+			//---postal code
+			configurationItem = null;
+			for( ConfigurationItem configurationItemValue : receiptConfig.getStore().getPostalCodeConfiguration())
+			{
+				if ( configurationItemValue.getType().equalsIgnoreCase(ConfigurationType.JSON_REGEX.getConfigurationType()))
+				{
+					configurationItem = configurationItemValue;
+					
+					break;
+				}
+			}
+			
+			if ( configurationItem == null )
+			{
+				System.err.println( "configurationItem == null" );
+				
+				return ;
+			}
+	        		
+	        String postalCode = regexParser.getGroupValueByRegex(
+	        		payloadContentText, 
+					configurationItem.getValue(), 
+					configurationItem.getMatch(), 
+					configurationItem.getGroup());
+    		
+			value.setPostalCode(postalCode);
+			
+			System.out.println(cMethodName + "::postalCode: " + value.getPostalCode());
 		}
 		catch( Exception e )
 		{

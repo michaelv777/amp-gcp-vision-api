@@ -71,6 +71,16 @@
   ,
   "store":
   {
+  	"nameConfiguration":
+    [
+      {
+        "type": "json_regex",
+        "priority": 1,
+        "value": "(?:.*)((home)(\\s+)(depot)|(homedepot))(?:.*)",
+        "match": 1,
+        "group": 1
+      }
+    ],
     "streetAddressConfiguration":
     [
       {
@@ -99,6 +109,53 @@
         "value": "(?:.*)(?:\\s{1,})((\\d{1,}|\\d{1,}-\\d{1,})(.*)(?=\\bavenue\\b|\\blane\\b|\\broad\\b|\\bboulevard\\b|\\bdrive\\b|\\bstreet\\b|\\bave\\b|\\bdr\\b|\\brd\\b|\\bblvd\\b|\\bln\\b|\\bst\\b|\\bpkwy\\b|\\bcircle\\b)(\\bavenue\\b|\\blane\\b|\\broad\\b|\\bboulevard\\b|\\bdrive\\b|\\bstreet\\b|\\bave\\b|\\bdr\\b|\\brd\\b|\\bblvd\\b|\\bln\\b|\\bst\\b|\\bpkwy\\b|\\bcircle\\b))(?:.*)",
         "match": 1,
         "group": 3
+      }
+    ]
+    ,
+    "cityConfiguration":
+    [
+      {
+        "type": "json_regex",
+        "priority": 1,
+        "value": "(?:.*)(?=\\bavenue\\b|\\blane\\b|\\broad\\b|\\bboulevard\\b|\\bdrive\\b|\\bstreet\\b|\\bave\\b|\\bdr\\b|\\brd\\b|\\bblvd\\b|\\bln\\b|\\bst\\b|\\bpkwy\\b|\\bcircle\\b)(\\bavenue\\b|\\blane\\b|\\broad\\b|\\bboulevard\\b|\\bdrive\\b|\\bstreet\\b|\\bave\\b|\\bdr\\b|\\brd\\b|\\bblvd\\b|\\bln\\b|\\bst\\b|\\bpkwy\\b|\\bcircle\\b)(?:[\\s,]{1,})([^,]+)(?:[,]{1,})(?:.*)",
+        "match": 1,
+        "group": 2
+      }
+    ]
+    ,
+    "provinceConfiguration":
+    [
+      {
+        "type": "json_regex",
+        "priority": 1,
+        "value": "(?:.*)(\\bAB\\b|\\bBC\\b|\\bMB\\b|\\bN[BLTSU]\\b|\\bON\\b|\\bONT\\b|\\bPE\\b|\\bQC\\b|\\bSK\\b|\\bYT\\b)(?:.*)",
+        "match": 1,
+        "group": 1
+      },
+      {
+        "type": "json_regex",
+        "priority": 2,
+        "value": "(?:.*)(\\bA[KLRZ]\\b|\\bC[AOT]\\b|\\bD[CE]\\b|\\bFL\\b|\\bGA\\b|\\bHI\\b|\\bI[ADLN]\\b|\\bK[SY]\\b|\\bLA\\b|\\bM[ADEINOST]\\b|\\bN[CDEHJMVY]\\b|\\bO[HKR]\\b|\\bP[AR]\\b|\\bRI\\b|\\bS[CD]\\b|\\bT[NX]\\b|\\bUT\\b|\\bV[AIT]\\b|\\bW[AIVY]\\b)(?:.*)",
+        "match": 1,
+        "group": 1
+      }
+    ]
+    ,
+    "postalCodeConfiguration":
+    [
+      {
+        "type": "json_regex",
+        "priority": 1,
+        "value": "(?:.*)([ABCEGHJKLMNPRSTVXY][0-9][A-Z]\\s*[0-9][A-Z][0-9])(?:.*)",
+        "match": 1,
+        "group": 1
+      },
+      {
+        "type": "json_regex",
+        "priority": 2,
+        "value": "(?:.*)([0-9]{5}(?:-[0-9]{4})?)(?:.*)",
+        "match": 1,
+        "group": 1
       }
     ]
   }
