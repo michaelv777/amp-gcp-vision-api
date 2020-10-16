@@ -23,12 +23,24 @@ public class ItemsDataConfiguration implements Serializable
 	
 	@SerializedName("itemsDetails")
 	@Expose
-	public List<ConfigurationItem> itemsDetails = new ArrayList<ConfigurationItem>();
+	public List<ConfigurationItem> itemsDetails = 
+		new ArrayList<ConfigurationItem>();
 
 	@SerializedName("itemsPrices")
 	@Expose
-	public List<ConfigurationItem> itemsPrices = new ArrayList<ConfigurationItem>();
+	public List<ConfigurationItem> itemsPrices = 
+		new ArrayList<ConfigurationItem>();
 
+	@SerializedName("itemsDataParser")
+	@Expose
+	public List<ItemsDataParserConfiguration> itemsDataParser = 
+		new ArrayList<ItemsDataParserConfiguration>();
+	
+	@SerializedName("itemsPricesParser")
+	@Expose
+	public List<ItemsDataParserConfiguration> itemsPricesParser = 
+		new ArrayList<ItemsDataParserConfiguration>();
+	
 	/**
 	 * @return the itemsDetails
 	 */
@@ -55,5 +67,33 @@ public class ItemsDataConfiguration implements Serializable
 	 */
 	public void setItemsPrices(List<ConfigurationItem> itemsPrices) {
 		this.itemsPrices = itemsPrices;
+	}
+
+	/**
+	 * @return the itemsDataParser
+	 */
+	public List<ItemsDataParserConfiguration> getItemsDataParser() {
+		return itemsDataParser;
+	}
+
+	/**
+	 * @param itemsDataParser the itemsDataParser to set
+	 */
+	public void setItemsDataParser(List<ItemsDataParserConfiguration> itemsDataParser) {
+		this.itemsDataParser = itemsDataParser;
+	}
+
+	/**
+	 * @return the itemsPricesParser
+	 */
+	public List<ItemsDataParserConfiguration> getItemsPricesParser() {
+		return itemsPricesParser;
+	}
+
+	/**
+	 * @param itemsPricesParser the itemsPricesParser to set
+	 */
+	public void setItemsPricesParser(List<ItemsDataParserConfiguration> itemsPricesParser) {
+		this.itemsPricesParser = itemsPricesParser;
 	}
 }

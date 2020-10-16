@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.amp.common.api.vision.dto.ReceiptDTO;
 import com.amp.common.api.vision.dto.ReceiptItemDTO;
+import com.amp.common.api.vision.dto.ReceiptItemDTOWrapper;
 import com.amp.common.api.vision.dto.StoreDTO;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
 import com.amp.common.api.vision.handler.receipt.parser.DateTimeParser;
@@ -113,9 +114,10 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, IRe
 	}
 
 	@Override
-	public Instant getPurchaseDate(DocumentContext jsonContext, 
-								   TextAnnotation receiptAnnotation,
-								   ReceiptConfiguration receiptConfig)
+	public Instant getPurchaseDate(
+			DocumentContext jsonContext, 
+			TextAnnotation receiptAnnotation,
+			ReceiptConfiguration receiptConfig)
 	{
 		String cMethodName = "";
 		
@@ -139,9 +141,10 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, IRe
 	}
 	
 	@Override
-	public BigDecimal getTotal(DocumentContext jsonContext, 
-							   TextAnnotation receiptAnnotation,
-							   ReceiptConfiguration receiptConfig)
+	public BigDecimal getTotal(
+			DocumentContext jsonContext, 
+			TextAnnotation receiptAnnotation,
+			ReceiptConfiguration receiptConfig)
 	{
 		String cMethodName = "";
 		
@@ -165,9 +168,10 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, IRe
 	}
 	
 	@Override
-	public BigDecimal getSubtotal(DocumentContext jsonContext, 
-							   	  TextAnnotation receiptAnnotation,
-							      ReceiptConfiguration receiptConfig)
+	public BigDecimal getSubtotal(
+			DocumentContext jsonContext, 
+			TextAnnotation receiptAnnotation,
+			ReceiptConfiguration receiptConfig)
 	{
 		String cMethodName = "";
 		
@@ -191,9 +195,10 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, IRe
 	}
 	
 	@Override
-	public BigDecimal getTaxRate(DocumentContext jsonContext, 
-							   	 TextAnnotation receiptAnnotation,
-							   	 ReceiptConfiguration receiptConfig)
+	public BigDecimal getTaxRate(
+			DocumentContext jsonContext, 
+			TextAnnotation receiptAnnotation,
+			ReceiptConfiguration receiptConfig)
 	{
 		String cMethodName = "";
 		
@@ -217,9 +222,10 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, IRe
 	}
 	
 	@Override
-	public BigDecimal getTaxAmount(DocumentContext jsonContext, 
-							   	 TextAnnotation receiptAnnotation,
-							   	 ReceiptConfiguration receiptConfig)
+	public BigDecimal getTaxAmount(
+			DocumentContext jsonContext, 
+			TextAnnotation receiptAnnotation,
+			ReceiptConfiguration receiptConfig)
 	{
 		String cMethodName = "";
 		
@@ -243,9 +249,10 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, IRe
 	}
 	
 	@Override
-	public StoreDTO getStore(DocumentContext jsonContext, 
-							 TextAnnotation receiptAnnotation,
-							 ReceiptConfiguration receiptConfig)
+	public StoreDTO getStore(
+			DocumentContext jsonContext, 
+			TextAnnotation receiptAnnotation,
+			ReceiptConfiguration receiptConfig)
 	{
 		String cMethodName = "";
 		
@@ -269,13 +276,14 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, IRe
 	}
 	
 	@Override
-	public Set<ReceiptItemDTO> getItems(DocumentContext jsonContext, 
-							 TextAnnotation receiptAnnotation,
-							 ReceiptConfiguration receiptConfig)
+	public Set<ReceiptItemDTO> getItems(
+			DocumentContext jsonContext, 
+			TextAnnotation receiptAnnotation,
+			ReceiptConfiguration receiptConfig)
 	{
 		String cMethodName = "";
 		
-		Set<ReceiptItemDTO> value = null;
+		ReceiptItemDTOWrapper value = null;
 		
 		try
 		{
@@ -291,7 +299,7 @@ public abstract class RequestHandlerBase implements RequestHandlerInterface, IRe
 			LOGGER.error(cMethodName + "::Exception:" + e.getMessage(), e);
 		}
 		
-		return value;
+		return value.getItemsSet();
 	}
 	
 	@Override
