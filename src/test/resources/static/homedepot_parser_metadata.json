@@ -71,7 +71,7 @@
   ,
   "store":
   {
-  	"nameConfiguration":
+    "nameConfiguration":
     [
       {
         "type": "json_regex",
@@ -110,8 +110,7 @@
         "match": 1,
         "group": 3
       }
-    ]
-    ,
+    ],
     "cityConfiguration":
     [
       {
@@ -162,28 +161,27 @@
   ,
   "itemsData":
   {
-    "itemsPrices": 
-    [
-      {   
-        "type": "json_path",
-        "priority": 2,
-        "value": "$.blocks[7]..paragraphs[0]..words[*].text"
-      }
-    ]
-    ,  
     "itemsDetails": 
     [
       {
         "type": "json_regex",
         "priority": 1,
-        "value": "(?:.*?)(\\d{12}[\\S\\s]*<A>)(?:.*?)",
-        "match": 1,
-        "group": 1
-      },
-      {   
-        "type": "json_path",
-        "priority": 2,
-        "value": "$.blocks[6]..paragraphs[0]..words[*].text"
+        "value": "(?:.*?)(\\d{12}[\\S\\s]*(?=<A>)<A>[\\S\\s]+(?=\\bSUBTOTAL\\b))(\\bSUBTOTAL\\b)(?:.*?)",
+        "match": 0,
+        "group": 1,
+         
+        "itemsParser":
+        [
+          {
+            "priority": 1,
+            "itemsDelimiter": "<A>",
+            "itemsFieldsDelimiter": "[\\s]+",
+            "itemCodeIndex": 0,
+            "itemNameIndex": 1,
+            "itemPriceIndex": -1,
+            "itemQuantityIndex": -1
+          }
+        ]
       }
     ]
   }

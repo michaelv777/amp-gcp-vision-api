@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amp.common.api.vision.application.VisionApiConstants;
-import com.amp.common.api.vision.handler.impl.RequestHandlerDefault;
+import com.amp.common.api.vision.handler.vendor.RequestHandlerDefault;
 
 /**
  * @author MVEKSLER

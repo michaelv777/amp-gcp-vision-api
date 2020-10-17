@@ -3,16 +3,18 @@
  */
 package com.amp.common.api.vision.handler.receipt.parser;
 
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amp.common.api.vision.dto.ReceiptItemDTO;
 import com.amp.common.api.vision.dto.ReceiptItemDTOWrapper;
-import com.amp.common.api.vision.handler.receipt.config.ConfigurationItem;
+import com.amp.common.api.vision.handler.receipt.config.ItemsDetailsConfiguration;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
 import com.google.cloud.vision.v1.TextAnnotation;
 import com.jayway.jsonpath.DocumentContext;
@@ -21,7 +23,7 @@ import com.jayway.jsonpath.DocumentContext;
  * @author mveksler
  *
  */
-public class ItemsDataParser extends AbstractParser
+public class ItemsDataParser extends AbstractParser implements IItemsDataParser
 {
 	private static final Logger LOGGER = 
 			LoggerFactory.getLogger(ItemsDataParser.class);
@@ -41,12 +43,7 @@ public class ItemsDataParser extends AbstractParser
 	        StackTraceElement ste = stacktrace[1];
 	        cMethodName = ste.getMethodName();
 	        
-	        List<String> items = this.getItemsDetails(jsonContext, receiptAnnotation, receiptConfig);
-	        itemsData.setItems(items);
-	        
-	        List<String> prices = this.getItemsPrices(jsonContext, receiptAnnotation, receiptConfig);
-	        itemsData.setPrices(prices);
-	        
+	        itemsData = this.getItemsDetails(jsonContext, receiptAnnotation, receiptConfig);
 		}
 		catch( Exception e )
 		{
@@ -56,14 +53,14 @@ public class ItemsDataParser extends AbstractParser
 		return itemsData;
 	}
 	
-	public List<String> getItemsDetails(
+	public ReceiptItemDTOWrapper getItemsDetails(
 			DocumentContext jsonContext, 
 			TextAnnotation receiptAnnotation, 
 			ReceiptConfiguration receiptConfig)
 	{
 		String cMethodName = "";
 		
-		List<String> values = new LinkedList<String>(); 
+		ReceiptItemDTOWrapper itemsData = new ReceiptItemDTOWrapper();
 		
 		try
 		{
@@ -71,28 +68,30 @@ public class ItemsDataParser extends AbstractParser
 	        StackTraceElement ste = stacktrace[1];
 	        cMethodName = ste.getMethodName();
 	        
-	        Map<Integer, ConfigurationItem> configurationItemsMap = new 
-	        		TreeMap<Integer, ConfigurationItem>();
+	        Map<Integer, ItemsDetailsConfiguration> configurationItemsMap = new 
+	        		TreeMap<Integer, ItemsDetailsConfiguration>();
 	        
-	        for( ConfigurationItem configurationItem : receiptConfig.getItemsData().getItemsDetails() )
+	        for( ItemsDetailsConfiguration configurationItem : receiptConfig.getItemsData().getItemsDetails() )
 	        {
 	        	configurationItemsMap.put(configurationItem.getPriority(), configurationItem);
 	        }
 	        
-	        for( Map.Entry<Integer, ConfigurationItem> configurationItemEntry : configurationItemsMap.entrySet() )
+	        for( Map.Entry<Integer, ItemsDetailsConfiguration> configurationItemEntry : configurationItemsMap.entrySet() )
 	        {
-	        	ConfigurationItem configurationItem = configurationItemEntry.getValue();
+	        	ItemsDetailsConfiguration configurationItem = configurationItemEntry.getValue();
 	        	
 	        	String configType = configurationItem.getType();
 	        	
 	        	if ( configType.equalsIgnoreCase(ConfigurationType.JSON_REGEX.getConfigurationType()) )
-	        	{
-	        		List<String> valuesStr = this.handleStringsListDataWithJsonRegex(receiptAnnotation, configurationItem);
-	        		
-	        		if ( valuesStr != null && !valuesStr.isEmpty())
+	        	{	        		
+	        		List<String> items = this.handleStringsListDataWithJsonRegex(receiptAnnotation, configurationItem);
+	        		if ( items != null && !items.isEmpty())
 		        	{
-	        			values.addAll(valuesStr);
+	        			itemsData.getItems().addAll(items);
+	        			
+	        			itemsData.getItemsSet().addAll(this.parseItemsData(items, configurationItem));
 		        	}
+	        		//---
 	        	}
 	        }
 		}
@@ -101,54 +100,14 @@ public class ItemsDataParser extends AbstractParser
 			LOGGER.error(cMethodName + "::Exception:" + e.getMessage(), e);
 		}
 		
-		return values;
+		return itemsData;
+	}
+
+	@Override
+	public Set<ReceiptItemDTO> parseItemsData(
+			List<String> items, ItemsDetailsConfiguration configurationItem)
+	{
+		return new LinkedHashSet<ReceiptItemDTO>();
 	}
 	
-	public List<String> getItemsPrices(
-			DocumentContext jsonContext, 
-			TextAnnotation receiptAnnotation, 
-			ReceiptConfiguration receiptConfig)
-	{
-		String cMethodName = "";
-		
-		List<String> values = new LinkedList<String>(); 
-		
-		try
-		{
-			StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
-	        StackTraceElement ste = stacktrace[1];
-	        cMethodName = ste.getMethodName();
-	        
-	        Map<Integer, ConfigurationItem> configurationItemsMap = new 
-	        		TreeMap<Integer, ConfigurationItem>();
-	        
-	        for( ConfigurationItem configurationItem : receiptConfig.getItemsData().getItemsPrices() )
-	        {
-	        	configurationItemsMap.put(configurationItem.getPriority(), configurationItem);
-	        }
-	        
-	        for( Map.Entry<Integer, ConfigurationItem> configurationItemEntry : configurationItemsMap.entrySet() )
-	        {
-	        	ConfigurationItem configurationItem = configurationItemEntry.getValue();
-	        	
-	        	String configType = configurationItem.getType();
-	        	
-	        	if ( configType.equalsIgnoreCase(ConfigurationType.JSON_REGEX.getConfigurationType()) )
-	        	{
-	        		List<String> valuesStr = this.handleStringsListDataWithJsonRegex(receiptAnnotation, configurationItem);
-	        		
-	        		if ( valuesStr != null && !valuesStr.isEmpty())
-		        	{
-	        			values.addAll(valuesStr);
-		        	}
-	        	}
-	        }
-		}
-		catch( Exception e )
-		{
-			LOGGER.error(cMethodName + "::Exception:" + e.getMessage(), e);
-		}
-		
-		return values;
-	}
 }

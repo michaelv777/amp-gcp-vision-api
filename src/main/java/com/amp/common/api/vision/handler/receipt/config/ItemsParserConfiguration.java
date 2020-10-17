@@ -14,14 +14,26 @@ import com.google.gson.annotations.SerializedName;
  * @author mveksler
  *
  */
-public class ItemsDataParserConfiguration implements Serializable
+public class ItemsParserConfiguration implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 
-	@SerializedName("itemsSplitter")
+	@SerializedName("priority")
 	@Expose
-	public String itemsSplitter = StringUtils.EMPTY;
+	public Integer priority = 0;
 	
+	@SerializedName("itemsDelimiter")
+	@Expose
+	public String itemsDelimiter = StringUtils.EMPTY;
+	
+	@SerializedName("itemsFieldsDelimiter")
+	@Expose
+	public String itemsFieldsDelimiter = StringUtils.EMPTY;
+	
+	@SerializedName("itemFieldsCount")
+	@Expose
+	public Integer itemFieldsCount = 0;
+
 	@SerializedName("itemCodeIndex")
 	@Expose
 	public Integer itemCodeIndex = -1;
@@ -37,26 +49,40 @@ public class ItemsDataParserConfiguration implements Serializable
 	@SerializedName("itemQuantityIndex")
 	@Expose
 	public Integer itemQuantityIndex = -1;
-
-	/**
-	 * @return the itemsSplitter
-	 */
-	public String getItemsSplitter() {
-		return itemsSplitter;
-	}
-
-	/**
-	 * @param itemsSplitter the itemsSplitter to set
-	 */
-	public void setItemsSplitter(String itemsSplitter) {
-		this.itemsSplitter = itemsSplitter;
-	}
-
+	
 	/**
 	 * @return the itemCodeIndex
 	 */
 	public Integer getItemCodeIndex() {
 		return itemCodeIndex;
+	}
+
+	/**
+	 * @return the itemsDelimiter
+	 */
+	public String getItemsDelimiter() {
+		return itemsDelimiter;
+	}
+
+	/**
+	 * @param itemsDelimiter the itemsDelimiter to set
+	 */
+	public void setItemsDelimiter(String itemsDelimiter) {
+		this.itemsDelimiter = itemsDelimiter;
+	}
+
+	/**
+	 * @return the itemsFieldsDelimiter
+	 */
+	public String getItemsFieldsDelimiter() {
+		return itemsFieldsDelimiter;
+	}
+
+	/**
+	 * @param itemsFieldsDelimiter the itemsFieldsDelimiter to set
+	 */
+	public void setItemsFieldsDelimiter(String itemsFieldsDelimiter) {
+		this.itemsFieldsDelimiter = itemsFieldsDelimiter;
 	}
 
 	/**
@@ -107,6 +133,34 @@ public class ItemsDataParserConfiguration implements Serializable
 	public void setItemQuantityIndex(Integer itemQuantityIndex) {
 		this.itemQuantityIndex = itemQuantityIndex;
 	}
+	
+	/**
+	 * @return the priority
+	 */
+	public Integer getPriority() {
+		return priority;
+	}
+
+	/**
+	 * @param priority the priority to set
+	 */
+	public void setPriority(Integer priority) {
+		this.priority = priority;
+	}
+	
+	/**
+	 * @return the itemFieldsCount
+	 */
+	public Integer getItemFieldsCount() {
+		return itemFieldsCount;
+	}
+
+	/**
+	 * @param itemFieldsCount the itemFieldsCount to set
+	 */
+	public void setItemFieldsCount(Integer itemFieldsCount) {
+		this.itemFieldsCount = itemFieldsCount;
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
@@ -119,7 +173,7 @@ public class ItemsDataParserConfiguration implements Serializable
 		result = prime * result + ((itemNameIndex == null) ? 0 : itemNameIndex.hashCode());
 		result = prime * result + ((itemPriceIndex == null) ? 0 : itemPriceIndex.hashCode());
 		result = prime * result + ((itemQuantityIndex == null) ? 0 : itemQuantityIndex.hashCode());
-		result = prime * result + ((itemsSplitter == null) ? 0 : itemsSplitter.hashCode());
+		result = prime * result + ((itemsDelimiter == null) ? 0 : itemsDelimiter.hashCode());
 		return result;
 	}
 
@@ -134,10 +188,10 @@ public class ItemsDataParserConfiguration implements Serializable
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof ItemsDataParserConfiguration)) {
+		if (!(obj instanceof ItemsParserConfiguration)) {
 			return false;
 		}
-		ItemsDataParserConfiguration other = (ItemsDataParserConfiguration) obj;
+		ItemsParserConfiguration other = (ItemsParserConfiguration) obj;
 		if (itemCodeIndex == null) {
 			if (other.itemCodeIndex != null) {
 				return false;
@@ -166,11 +220,11 @@ public class ItemsDataParserConfiguration implements Serializable
 		} else if (!itemQuantityIndex.equals(other.itemQuantityIndex)) {
 			return false;
 		}
-		if (itemsSplitter == null) {
-			if (other.itemsSplitter != null) {
+		if (itemsDelimiter == null) {
+			if (other.itemsDelimiter != null) {
 				return false;
 			}
-		} else if (!itemsSplitter.equals(other.itemsSplitter)) {
+		} else if (!itemsDelimiter.equals(other.itemsDelimiter)) {
 			return false;
 		}
 		return true;

@@ -19,9 +19,6 @@ public class ReceiptItemDTOWrapper
 	
 	protected List<String> items = 
 			new LinkedList<String>();
-	
-	protected List<String> prices = 
-			new LinkedList<String>();
 
 	/**
 	 * @return the itemsSet
@@ -49,19 +46,5 @@ public class ReceiptItemDTOWrapper
 	 */
 	public void setItems(List<String> items) {
 		this.items = items;
-	}
-
-	/**
-	 * @return the prices
-	 */
-	public List<String> getPrices() {
-		return prices;
-	}
-
-	/**
-	 * @param prices the prices to set
-	 */
-	public void setPrices(List<String> prices) {
-		this.prices = prices;
 	}
 }

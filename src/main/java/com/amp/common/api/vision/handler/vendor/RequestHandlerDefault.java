@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.amp.common.api.vision.handler.impl;
+package com.amp.common.api.vision.handler.vendor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

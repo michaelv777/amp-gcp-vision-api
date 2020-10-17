@@ -20,7 +20,7 @@ import com.jayway.jsonpath.DocumentContext;
  * @author mveksler
  *
  */
-public class AbstractParser implements IDataParser
+public abstract class AbstractParser implements IReceiptDataParser
 {
 	private static final Logger LOGGER = 
 			LoggerFactory.getLogger(AbstractParser.class);

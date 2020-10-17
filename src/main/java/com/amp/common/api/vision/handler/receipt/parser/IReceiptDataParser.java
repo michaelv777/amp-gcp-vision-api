@@ -14,7 +14,7 @@ import com.jayway.jsonpath.DocumentContext;
  * @author mveksler
  *
  */
-public interface IDataParser 
+public interface IReceiptDataParser 
 {
 	public String handleStringDataWithJsonRegex(
 			TextAnnotation receiptAnnotation,
