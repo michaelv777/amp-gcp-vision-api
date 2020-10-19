@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.amp.common.api.vision.dto.ReceiptDTO;
 import com.amp.common.api.vision.dto.ReceiptItemDTO;
 import com.amp.common.api.vision.dto.ReceiptItemDTOWrapper;
+import com.amp.common.api.vision.handler.HandlerObjectName;
 import com.amp.common.api.vision.handler.RequestHandlerBase;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
 import com.amp.common.api.vision.handler.receipt.parser.vendor.ItemsDataParserHomedepot;
@@ -23,6 +24,7 @@ import com.jayway.jsonpath.DocumentContext;
  * @author MVEKSLER
  *
  */
+@HandlerObjectName(objectType = "homedepot")
 public class RequestHandlerHomedepot extends RequestHandlerBase 
 {
 	private static final Logger LOGGER = 

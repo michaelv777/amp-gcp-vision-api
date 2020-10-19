@@ -135,10 +135,6 @@ public class VisionControllerDocument
 	      throws Exception
 	  {
 		  ImageAnnotatorClient client = null;
-		  
-		  JsonObject receiptsPayload = new JsonObject();
-		  JsonArray receiptsPayloadArray = new JsonArray();
-		  receiptsPayload.add("results", receiptsPayloadArray);
 			
 		  List<ReceiptDTO> receiptObjects = new LinkedList<ReceiptDTO>();
 		  // Initialize client that will be used to send requests. This client only needs to be created
@@ -146,11 +142,6 @@ public class VisionControllerDocument
 		  // the "close" method on the client to safely clean up any remaining background resources.
 		  try
 		  {
-			  JsonObject pathObject = new JsonObject();
-			  pathObject.addProperty("gcsSourcePath", gcsSourcePath);
-			  pathObject.addProperty("gcsDestinationPath", gcsDestinationPath);
-			  receiptsPayload.add("file", pathObject);
-		    	
 			  client = ImageAnnotatorClient.create();
 					  
 			  List<AsyncAnnotateFileRequest> requests = new ArrayList<>();
@@ -201,6 +192,16 @@ public class VisionControllerDocument
 		      List<AsyncAnnotateFileResponse> result =
 		          response.get(180, TimeUnit.SECONDS).getResponsesList();
 	
+		      //---
+		      JsonObject receiptsPayload = new JsonObject();
+			  JsonArray receiptsPayloadArray = new JsonArray();
+			  receiptsPayload.add("results", receiptsPayloadArray);
+			  
+			  JsonObject pathObject = new JsonObject();
+			  pathObject.addProperty("gcsSourcePath", gcsSourcePath);
+			  pathObject.addProperty("gcsDestinationPath", gcsDestinationPath);
+			  receiptsPayload.add("file", pathObject);
+			  
 		      // Once the request has completed and the System.output has been
 		      // written to GCS, we can list all the System.output files.
 		      Storage storage = StorageOptions.getDefaultInstance().getService();
@@ -278,12 +279,12 @@ public class VisionControllerDocument
 			  throw e;
 		  }
 		  finally
-		    {
-		    	if ( client != null )
-		    	{
-		    		client.close();
-		    	}
-		    }
+		  {
+			  if ( client != null )
+			  {
+				  client.close();
+			  }
+		  }
 	  }
 
 	@GetMapping("/detectDocumentTextGcsByPage")
@@ -309,38 +310,127 @@ public class VisionControllerDocument
 		return new ModelAndView("viewDocument", map);
 	}
 	
-	@GetMapping("/detectDocumentTextGcsExt")
-	public ModelAndView detectDocumentTextGcsExt(
+	@GetMapping("/detectDocumentTextGcsByURL")
+	public List<ReceiptDTO> detectDocumentTextGcsByURL(
 			@RequestParam("documentUrl") String documentUrl,
 			HttpServletRequest webRequest) throws IOException 
 	{
-
-		// Uploads the document to the GCS bucket
-		Resource documentResource = resourceLoader.getResource(documentUrl);
-		BlobId outputBlobId = BlobId.of(ocrBucket, documentResource.getFilename());
-		BlobInfo blobInfo =
-				BlobInfo.newBuilder(outputBlobId)
-						.setContentType(getFileType(documentResource))
-						.build();
-
-		try (WriteChannel writer = storage.writer(blobInfo)) 
+		
+		List<ReceiptDTO> receiptObjects = new LinkedList<ReceiptDTO>();
+		
+		try
 		{
-			ByteStreams.copy(documentResource.getInputStream(), Channels.newOutputStream(writer));
+			// Uploads the document to the GCS bucket
+			Resource documentResource = resourceLoader.getResource(documentUrl);
+			BlobId outputBlobId = BlobId.of(ocrBucket, documentResource.getFilename());
+			BlobInfo blobInfo =
+					BlobInfo.newBuilder(outputBlobId)
+							.setContentType(getFileType(documentResource))
+							.build();
+	
+			try (WriteChannel writer = storage.writer(blobInfo)) 
+			{
+				ByteStreams.copy(documentResource.getInputStream(), Channels.newOutputStream(writer));
+			}
+	
+			// Run OCR on the document
+			GoogleStorageLocation documentLocation =
+					GoogleStorageLocation.forFile(outputBlobId.getBucket(), outputBlobId.getName());
+	
+			GoogleStorageLocation outputLocation = GoogleStorageLocation.forFolder(
+					outputBlobId.getBucket(), documentLocation.getBlobName().replace("input", "output"));
+	
+			ListenableFuture<DocumentOcrResultSet> result =
+					documentOcrTemplate.runOcrForDocument(documentLocation, outputLocation);
+	
+			ocrStatusReporter.registerFuture(documentLocation.uriString(), result);
+	
+			//---
+			JsonObject receiptsPayload = new JsonObject();
+			JsonArray receiptsPayloadArray = new JsonArray();
+			receiptsPayload.add("results", receiptsPayloadArray);
+			  
+			JsonObject pathObject = new JsonObject();
+			pathObject.addProperty("gcsSourcePath", documentLocation.uriString());
+			pathObject.addProperty("gcsDestinationPath", outputLocation.uriString());
+			receiptsPayload.add("file", pathObject);
+			
+			// Once the request has completed and the System.output has been
+			// written to GCS, we can list all the System.output files.
+			Storage storage = StorageOptions.getDefaultInstance().getService();
+	
+			// Get the destination location from the gcsDestinationPath
+		    Pattern pattern = Pattern.compile("gs://([^/]+)/(.+)");
+		    Matcher matcher = pattern.matcher(outputLocation.uriString());
+		
+		    if (matcher.find())
+		    {
+		        String bucketName = matcher.group(1);
+		        String prefix = matcher.group(2);
+	
+		        // Get the list of objects with the given prefix from the GCS bucket
+		        Bucket bucket = storage.get(bucketName);
+		        com.google.api.gax.paging.Page<Blob> pageList = bucket.list(BlobListOption.prefix(prefix));
+	
+		        Blob firstOutputFile = null;
+	
+		        // List objects with the given prefix.
+		        LOG.info("Output files:");
+		        for (Blob blob : pageList.iterateAll()) 
+		        {
+		        	LOG.info(blob.getName());
+	
+		        	// Process the first System.output file from GCS.
+		        	// Since we specified batch size = 2, the first response contains
+		        	// the first two pages of the input file.
+		        	if (firstOutputFile == null) 
+		        	{
+		        		firstOutputFile = blob;
+		        	}
+		        }
+	
+		        // Get the contents of the file and convert the JSON contents to an AnnotateFileResponse
+		        // object. If the Blob is small read all its content in one request
+		        // (Note: the file is a .json file)
+		        // Storage guide: https://cloud.google.com/storage/docs/downloading-objects
+		        String jsonContents = new String(firstOutputFile.getContent());
+		        Builder builder = AnnotateFileResponse.newBuilder();
+		        JsonFormat.parser().merge(jsonContents, builder);
+	
+		        // Build the AnnotateFileResponse object
+		        AnnotateFileResponse annotateFileResponse = builder.build();
+	
+		        // Parse through the object to get the actual response for the first page of the input file.
+		        AnnotateImageResponse imageResponse = annotateFileResponse.getResponses(0);
+		       
+		        // Here we print the full text from the first page.
+		        // The response contains more information:
+		        // annotation/pages/blocks/paragraphs/words/symbols
+		        // including confidence score and bounding boxes
+		        JsonObject receiptPayload = new OcrResponseParser().buildResponsePayload(imageResponse);
+		    	
+		        receiptsPayloadArray.add(receiptPayload);
+		        
+		        TextAnnotation receiptAnnotation = imageResponse.getFullTextAnnotation();
+		    	
+		    	ReceiptDTO receiptObject = this.getOcrParserService().processVisionApiResponse(
+		    			receiptPayload, receiptAnnotation);
+		    	
+		    	receiptObjects.add(receiptObject);
+		    }
+		    else 
+		    {
+		    	LOG.info("No MATCH");
+		    }
 		}
-
-		// Run OCR on the document
-		GoogleStorageLocation documentLocation =
-				GoogleStorageLocation.forFile(outputBlobId.getBucket(), outputBlobId.getName());
-
-		GoogleStorageLocation outputLocation = GoogleStorageLocation.forFolder(
-				outputBlobId.getBucket(), "output/" + documentLocation.getBlobName());
-
-		ListenableFuture<DocumentOcrResultSet> result =
-				documentOcrTemplate.runOcrForDocument(documentLocation, outputLocation);
-
-		ocrStatusReporter.registerFuture(documentLocation.uriString(), result);
-
-		return new ModelAndView("submit_done");
+		catch( Exception e )
+		{
+			  LOG.error(e.getMessage(), e);
+		    	
+			  throw e;
+		}
+		
+		return receiptObjects;
 	}
 	
 	@Value("${application.ocr-bucket}")

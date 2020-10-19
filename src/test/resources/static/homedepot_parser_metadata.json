@@ -176,6 +176,8 @@
             "priority": 1,
             "itemsDelimiter": "<A>",
             "itemsFieldsDelimiter": "[\\s]+",
+            "itemsPricesDelimiter": "[\\s]+",
+            "itemFieldsCount": 2,
             "itemCodeIndex": 0,
             "itemNameIndex": 1,
             "itemPriceIndex": -1,

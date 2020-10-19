@@ -17,7 +17,7 @@ import com.google.gson.JsonObject;
  * @author MVEKSLER
  *
  */
-@HandlerObjectName(objectType = "homedepot")
+@HandlerObjectName(objectType = "default")
 public class RequestHandlerDefault extends RequestHandlerBase 
 {
 	private static final Logger LOGGER = 

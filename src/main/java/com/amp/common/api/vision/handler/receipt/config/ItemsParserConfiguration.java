@@ -30,6 +30,10 @@ public class ItemsParserConfiguration implements Serializable
 	@Expose
 	public String itemsFieldsDelimiter = StringUtils.EMPTY;
 	
+	@SerializedName("itemsPricesDelimiter")
+	@Expose
+	public String itemsPricesDelimiter = StringUtils.EMPTY;
+	
 	@SerializedName("itemFieldsCount")
 	@Expose
 	public Integer itemFieldsCount = 0;
@@ -160,6 +164,20 @@ public class ItemsParserConfiguration implements Serializable
 	 */
 	public void setItemFieldsCount(Integer itemFieldsCount) {
 		this.itemFieldsCount = itemFieldsCount;
+	}
+	
+	/**
+	 * @return the itemsPricesDelimiter
+	 */
+	public String getItemsPricesDelimiter() {
+		return itemsPricesDelimiter;
+	}
+
+	/**
+	 * @param itemsPricesDelimiter the itemsPricesDelimiter to set
+	 */
+	public void setItemsPricesDelimiter(String itemsPricesDelimiter) {
+		this.itemsPricesDelimiter = itemsPricesDelimiter;
 	}
 
 	/* (non-Javadoc)

@@ -15,7 +15,7 @@ public class VisionApiConstants
 				private static final long serialVersionUID = 1L;
 
 				{
-		            add("com.amp.common.api.vision.handler.impl");
+		            add("com.amp.common.api.vision.handler.vendor");
 		        }
 		    }; 
 }

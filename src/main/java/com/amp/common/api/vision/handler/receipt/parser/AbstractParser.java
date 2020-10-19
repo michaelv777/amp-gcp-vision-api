@@ -26,6 +26,8 @@ public abstract class AbstractParser implements IReceiptDataParser
 			LoggerFactory.getLogger(AbstractParser.class);
 
 	protected final String PARSER_VALUE_NOT_FOUND = "NA";
+	
+	protected final String PARSER_CR_NL_REGEX = "[\\r\\n|\\n]+";
 	//---
 	public String handleStringDataWithJsonPath(
 			DocumentContext jsonContext, 

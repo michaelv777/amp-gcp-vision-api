@@ -55,11 +55,15 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.amp.common.api.vision.dto.ReceiptItemDTOWrapper;
 import com.amp.common.api.vision.dto.StoreDTO;
 import com.amp.common.api.vision.handler.receipt.config.ConfigurationItem;
 import com.amp.common.api.vision.handler.receipt.config.DateTimeConfigurationItem;
+import com.amp.common.api.vision.handler.receipt.config.ItemsDetailsConfiguration;
 import com.amp.common.api.vision.handler.receipt.config.ReceiptConfiguration;
 import com.amp.common.api.vision.handler.receipt.parser.ConfigurationType;
+import com.amp.common.api.vision.handler.receipt.parser.ItemsDataParser;
+import com.amp.common.api.vision.handler.receipt.parser.vendor.ItemsDataParserHomedepot;
 import com.amp.common.api.vision.utils.RegexParser;
 import com.google.cloud.vision.v1.AnnotateImageRequest;
 import com.google.cloud.vision.v1.AnnotateImageResponse;
@@ -964,9 +968,11 @@ public class VisionControllerImageTest {
 	        StackTraceElement ste = stacktrace[1];
 	        cMethodName = ste.getMethodName();
 	        
-	        ConfigurationItem configurationItem = null;
+	        ReceiptItemDTOWrapper itemsData = new ReceiptItemDTOWrapper();
+	        
+	        ItemsDetailsConfiguration configurationItem = null;
 			
-			for( ConfigurationItem configurationItemValue : receiptConfig.getItemsData().getItemsDetails() )
+	        for( ItemsDetailsConfiguration configurationItemValue : receiptConfig.getItemsData().getItemsDetails() )
 			{
 				if ( configurationItemValue.getType().equalsIgnoreCase(ConfigurationType.JSON_REGEX.getConfigurationType()))
 				{
@@ -983,14 +989,23 @@ public class VisionControllerImageTest {
 				return ;
 			}
 	        
+			ItemsDataParser itemsDataParser = new ItemsDataParserHomedepot();
+			
 	        RegexParser regexParser = new RegexParser();
 	        
-	        List<String> values = regexParser.getGroupValuesByRegex(
+	        List<String> items = regexParser.getGroupValuesByRegex(
 	        		payloadContentText, 
 					configurationItem.getValue(), 
 					configurationItem.getGroup());
 			
-			System.out.println(cMethodName + "::Iems: " + values);
+	        if ( items != null && !items.isEmpty())
+        	{
+    			itemsData.getItems().addAll(items);
+    			
+    			itemsData.getItemsSet().addAll(itemsDataParser.parseItemsData(items, configurationItem));
+        	}
+	        
+			System.out.println(cMethodName + "::Iems: " + items);
 		}
 		catch( Exception e )
 		{
