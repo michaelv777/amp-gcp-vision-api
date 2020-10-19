@@ -1,22 +1,14 @@
 /**
  * 
  */
-package com.amp.common.api.vision.application;
+package com.amp.common.api.vision.controller;
 
-/**
- * @author mveksler
- *
- */
-
-import java.io.IOException;
 import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -38,22 +30,14 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.amp.common.api.vision.dto.ReceiptDTO;
 import com.amp.common.api.vision.service.OcrParserService;
-import com.amp.common.api.vision.utils.OcrResponseParser;
 import com.amp.common.api.vision.utils.OcrStatusReporter;
 import com.google.api.client.util.ByteStreams;
 import com.google.api.gax.longrunning.OperationFuture;
 import com.google.cloud.WriteChannel;
-import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.Storage.BlobListOption;
 import com.google.cloud.storage.Storage.BucketGetOption;
-import com.google.cloud.storage.StorageOptions;
-import com.google.cloud.vision.v1.AnnotateFileResponse;
-import com.google.cloud.vision.v1.AnnotateFileResponse.Builder;
-import com.google.cloud.vision.v1.AnnotateImageResponse;
 import com.google.cloud.vision.v1.AsyncAnnotateFileRequest;
 import com.google.cloud.vision.v1.AsyncAnnotateFileResponse;
 import com.google.cloud.vision.v1.AsyncBatchAnnotateFilesResponse;
@@ -65,13 +49,10 @@ import com.google.cloud.vision.v1.InputConfig;
 import com.google.cloud.vision.v1.OperationMetadata;
 import com.google.cloud.vision.v1.OutputConfig;
 import com.google.cloud.vision.v1.TextAnnotation;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.util.JsonFormat;
 
 @RestController
-public class VisionControllerDocument 
+public class VisionControllerDocument extends VisionControllerBase
 {
 	private final static Logger LOG = 
 			LoggerFactory.getLogger(VisionControllerDocument.class);
@@ -131,12 +112,12 @@ public class VisionControllerDocument
 	  public List<ReceiptDTO> detectDocumentTextGcs(
 			  @RequestParam("gcsSourcePath") String gcsSourcePath, 
 			  @RequestParam("gcsDestinationPath") String gcsDestinationPath,
-			  HttpServletRequest webRequest)
-	      throws Exception
+			  HttpServletRequest webRequest) throws Exception
 	  {
 		  ImageAnnotatorClient client = null;
 			
 		  List<ReceiptDTO> receiptObjects = new LinkedList<ReceiptDTO>();
+		  
 		  // Initialize client that will be used to send requests. This client only needs to be created
 		  // once, and can be reused for multiple requests. After completing all of your requests, call
 		  // the "close" method on the client to safely clean up any remaining background resources.
@@ -193,6 +174,7 @@ public class VisionControllerDocument
 		          response.get(180, TimeUnit.SECONDS).getResponsesList();
 	
 		      //---
+		      /*
 		      JsonObject receiptsPayload = new JsonObject();
 			  JsonArray receiptsPayloadArray = new JsonArray();
 			  receiptsPayload.add("results", receiptsPayloadArray);
@@ -263,14 +245,17 @@ public class VisionControllerDocument
 			    	ReceiptDTO receiptObject = this.getOcrParserService().processVisionApiResponse(
 			    			receiptPayload, receiptAnnotation);
 			    	
+		      	
 			    	receiptObjects.add(receiptObject);
 		      } 
 		      else 
 		      {
 		    	  	LOG.info("No MATCH");
 		      }
-		      
-		      return receiptObjects;
+		      */
+
+		      receiptObjects =  this.processDocumentVisionParser(
+		    		  gcsSourcePath, gcsDestinationPath);
 		  }
 		  catch( Exception e )
 		  {
@@ -285,6 +270,8 @@ public class VisionControllerDocument
 				  client.close();
 			  }
 		  }
+		  
+		  return receiptObjects;
 	  }
 
 	@GetMapping("/detectDocumentTextGcsByPage")
@@ -313,7 +300,7 @@ public class VisionControllerDocument
 	@GetMapping("/detectDocumentTextGcsByURL")
 	public List<ReceiptDTO> detectDocumentTextGcsByURL(
 			@RequestParam("documentUrl") String documentUrl,
-			HttpServletRequest webRequest) throws IOException 
+			HttpServletRequest webRequest) throws Exception 
 	{
 		
 		List<ReceiptDTO> receiptObjects = new LinkedList<ReceiptDTO>();
@@ -334,25 +321,26 @@ public class VisionControllerDocument
 			}
 	
 			// Run OCR on the document
-			GoogleStorageLocation documentLocation =
+			GoogleStorageLocation gcsSourcePath =
 					GoogleStorageLocation.forFile(outputBlobId.getBucket(), outputBlobId.getName());
 	
-			GoogleStorageLocation outputLocation = GoogleStorageLocation.forFolder(
-					outputBlobId.getBucket(), documentLocation.getBlobName().replace("input", "output"));
+			GoogleStorageLocation gcsDestinationPath = GoogleStorageLocation.forFolder(
+					outputBlobId.getBucket(), gcsSourcePath.getBlobName().replace("input", "output"));
 	
 			ListenableFuture<DocumentOcrResultSet> result =
-					documentOcrTemplate.runOcrForDocument(documentLocation, outputLocation);
+					documentOcrTemplate.runOcrForDocument(gcsSourcePath, gcsDestinationPath);
 	
-			ocrStatusReporter.registerFuture(documentLocation.uriString(), result);
+			ocrStatusReporter.registerFuture(gcsSourcePath.uriString(), result);
 	
 			//---
+			/*
 			JsonObject receiptsPayload = new JsonObject();
 			JsonArray receiptsPayloadArray = new JsonArray();
 			receiptsPayload.add("results", receiptsPayloadArray);
 			  
 			JsonObject pathObject = new JsonObject();
-			pathObject.addProperty("gcsSourcePath", documentLocation.uriString());
-			pathObject.addProperty("gcsDestinationPath", outputLocation.uriString());
+			pathObject.addProperty("gcsSourcePath", gcsSourcePath.uriString());
+			pathObject.addProperty("gcsDestinationPath", gcsDestinationPath.uriString());
 			receiptsPayload.add("file", pathObject);
 			
 			// Once the request has completed and the System.output has been
@@ -361,7 +349,7 @@ public class VisionControllerDocument
 	
 			// Get the destination location from the gcsDestinationPath
 		    Pattern pattern = Pattern.compile("gs://([^/]+)/(.+)");
-		    Matcher matcher = pattern.matcher(outputLocation.uriString());
+		    Matcher matcher = pattern.matcher(gcsDestinationPath.uriString());
 		
 		    if (matcher.find())
 		    {
@@ -422,6 +410,9 @@ public class VisionControllerDocument
 		    {
 		    	LOG.info("No MATCH");
 		    }
+		    */
+			receiptObjects =  this.processDocumentVisionParser(
+		    		  gcsSourcePath.uriString(), gcsDestinationPath.uriString());
 		}
 		catch( Exception e )
 		{

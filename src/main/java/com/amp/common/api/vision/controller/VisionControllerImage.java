@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.amp.common.api.vision.application;
+package com.amp.common.api.vision.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
