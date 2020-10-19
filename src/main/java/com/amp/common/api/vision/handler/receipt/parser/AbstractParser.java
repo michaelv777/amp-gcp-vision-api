@@ -186,7 +186,10 @@ public abstract class AbstractParser implements IReceiptDataParser
         		}
 	        }
         	
-        	LOGGER.debug(value.toString());
+        	if ( value != null )
+        	{
+        		LOGGER.debug(value.toString());
+        	}
 		}
 		catch( Exception e )
 		{

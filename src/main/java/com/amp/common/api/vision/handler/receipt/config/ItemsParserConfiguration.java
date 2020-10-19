@@ -34,17 +34,21 @@ public class ItemsParserConfiguration implements Serializable
 	@Expose
 	public String itemsPricesDelimiter = StringUtils.EMPTY;
 	
-	@SerializedName("itemFieldsCount")
+	@SerializedName("itemCodePattern")
 	@Expose
-	public Integer itemFieldsCount = 0;
-
-	@SerializedName("itemCodeIndex")
-	@Expose
-	public Integer itemCodeIndex = -1;
+	public String itemCodePattern = StringUtils.EMPTY;
 	
-	@SerializedName("itemNameIndex")
+	@SerializedName("itemCodePatternGroup")
 	@Expose
-	public Integer itemNameIndex = -1;
+	public Integer itemCodePatternGroup = -1;
+	
+	@SerializedName("itemNamePatternGroup")
+	@Expose
+	public Integer itemNamePatternGroup = -1;
+	
+	@SerializedName("itemNamePattern")
+	@Expose
+	public String itemNamePattern = StringUtils.EMPTY;
     
 	@SerializedName("itemPriceIndex")
 	@Expose
@@ -55,10 +59,59 @@ public class ItemsParserConfiguration implements Serializable
 	public Integer itemQuantityIndex = -1;
 	
 	/**
-	 * @return the itemCodeIndex
+	 * @return the itemCodePatternGroup
 	 */
-	public Integer getItemCodeIndex() {
-		return itemCodeIndex;
+	public Integer getItemCodePatternGroup() {
+		return itemCodePatternGroup;
+	}
+
+	/**
+	 * @param itemCodePatternGroup the itemCodePatternGroup to set
+	 */
+	public void setItemCodePatternGroup(Integer itemCodePatternGroup) {
+		this.itemCodePatternGroup = itemCodePatternGroup;
+	}
+
+	/**
+	 * @return the itemNamePatternGroup
+	 */
+	public Integer getItemNamePatternGroup() {
+		return itemNamePatternGroup;
+	}
+
+	/**
+	 * @param itemNamePatternGroup the itemNamePatternGroup to set
+	 */
+	public void setItemNamePatternGroup(Integer itemNamePatternGroup) {
+		this.itemNamePatternGroup = itemNamePatternGroup;
+	}
+
+	/**
+	 * @return the itemCodePattern
+	 */
+	public String getItemCodePattern() {
+		return itemCodePattern;
+	}
+
+	/**
+	 * @param itemCodePattern the itemCodePattern to set
+	 */
+	public void setItemCodePattern(String itemCodePattern) {
+		this.itemCodePattern = itemCodePattern;
+	}
+
+	/**
+	 * @return the itemNamePattern
+	 */
+	public String getItemNamePattern() {
+		return itemNamePattern;
+	}
+
+	/**
+	 * @param itemNamePattern the itemNamePattern to set
+	 */
+	public void setItemNamePattern(String itemNamePattern) {
+		this.itemNamePattern = itemNamePattern;
 	}
 
 	/**
@@ -87,27 +140,6 @@ public class ItemsParserConfiguration implements Serializable
 	 */
 	public void setItemsFieldsDelimiter(String itemsFieldsDelimiter) {
 		this.itemsFieldsDelimiter = itemsFieldsDelimiter;
-	}
-
-	/**
-	 * @param itemCodeIndex the itemCodeIndex to set
-	 */
-	public void setItemCodeIndex(Integer itemCodeIndex) {
-		this.itemCodeIndex = itemCodeIndex;
-	}
-
-	/**
-	 * @return the itemNameIndex
-	 */
-	public Integer getItemNameIndex() {
-		return itemNameIndex;
-	}
-
-	/**
-	 * @param itemNameIndex the itemNameIndex to set
-	 */
-	public void setItemNameIndex(Integer itemNameIndex) {
-		this.itemNameIndex = itemNameIndex;
 	}
 
 	/**
@@ -153,20 +185,6 @@ public class ItemsParserConfiguration implements Serializable
 	}
 	
 	/**
-	 * @return the itemFieldsCount
-	 */
-	public Integer getItemFieldsCount() {
-		return itemFieldsCount;
-	}
-
-	/**
-	 * @param itemFieldsCount the itemFieldsCount to set
-	 */
-	public void setItemFieldsCount(Integer itemFieldsCount) {
-		this.itemFieldsCount = itemFieldsCount;
-	}
-	
-	/**
 	 * @return the itemsPricesDelimiter
 	 */
 	public String getItemsPricesDelimiter() {
@@ -187,8 +205,7 @@ public class ItemsParserConfiguration implements Serializable
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((itemCodeIndex == null) ? 0 : itemCodeIndex.hashCode());
-		result = prime * result + ((itemNameIndex == null) ? 0 : itemNameIndex.hashCode());
+		
 		result = prime * result + ((itemPriceIndex == null) ? 0 : itemPriceIndex.hashCode());
 		result = prime * result + ((itemQuantityIndex == null) ? 0 : itemQuantityIndex.hashCode());
 		result = prime * result + ((itemsDelimiter == null) ? 0 : itemsDelimiter.hashCode());
@@ -210,20 +227,7 @@ public class ItemsParserConfiguration implements Serializable
 			return false;
 		}
 		ItemsParserConfiguration other = (ItemsParserConfiguration) obj;
-		if (itemCodeIndex == null) {
-			if (other.itemCodeIndex != null) {
-				return false;
-			}
-		} else if (!itemCodeIndex.equals(other.itemCodeIndex)) {
-			return false;
-		}
-		if (itemNameIndex == null) {
-			if (other.itemNameIndex != null) {
-				return false;
-			}
-		} else if (!itemNameIndex.equals(other.itemNameIndex)) {
-			return false;
-		}
+		
 		if (itemPriceIndex == null) {
 			if (other.itemPriceIndex != null) {
 				return false;

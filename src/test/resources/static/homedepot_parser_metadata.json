@@ -6,7 +6,7 @@
       {
         "type": "json_regex",
         "priority": 1,
-        "value": "(.*)(?=TOTAL)(TOTAL)(\\s+)(\\$?)(.*)(\\s+)(?=X{1,15}\\d{4})(X{1,15}\\d{4})(.*)",
+        "value": "(.*)(?=TOTAL)(TOTAL)(\\s+)(\\$?)(.*)(\\s+)(?=[Xx]{1,15}\\s+\\d{4})([Xx]{1,15}\\s+\\d{4})(.*)",
         "match": 1,
         "group": 5
       },
@@ -177,9 +177,10 @@
             "itemsDelimiter": "<A>",
             "itemsFieldsDelimiter": "[\\s]+",
             "itemsPricesDelimiter": "[\\s]+",
-            "itemFieldsCount": 2,
-            "itemCodeIndex": 0,
-            "itemNameIndex": 1,
+            "itemCodePattern": "(?:.*?)(\\d{12})(?:.*?)",
+            "itemCodePatternGroup": 1,
+            "itemNamePattern": "(?:.*?)(\\d{12})(\\s+.+\\b)",
+            "itemNamePatternGroup": 2,
             "itemPriceIndex": -1,
             "itemQuantityIndex": -1
           }

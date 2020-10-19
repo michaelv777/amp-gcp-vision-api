@@ -17,6 +17,7 @@ import com.amp.common.api.vision.dto.ReceiptItemDTO;
 import com.amp.common.api.vision.handler.receipt.config.ItemsDetailsConfiguration;
 import com.amp.common.api.vision.handler.receipt.config.ItemsParserConfiguration;
 import com.amp.common.api.vision.handler.receipt.parser.ItemsDataParser;
+import com.amp.common.api.vision.utils.RegexParser;
 
 /**
  * @author mveksler
@@ -62,63 +63,60 @@ public class ItemsDataParserHomedepot extends ItemsDataParser
 		        			
 				        	String[] itemsDetailsDel = itemsDetails.split(parserConfiguration.getItemsDelimiter());
 				        	String[] itemsPricesDel  = itemsPrices.split(parserConfiguration.getItemsPricesDelimiter());
-				        	
 				        	int itemsPricesIdx = 0;
 				        	
 			        		for( String itemDetailsDel : itemsDetailsDel)
 			        		{
-			        			String[] itemProperties = itemDetailsDel.trim().split(parserConfiguration.getItemsFieldsDelimiter());
+			        			//String[] itemProperties = itemDetailsDel.trim().split(parserConfiguration.getItemsFieldsDelimiter());
 			        			
-			        			int itemFieldsCount = parserConfiguration.getItemFieldsCount();
+			        			String itemCode = new RegexParser().getGroupValueByRegex(
+			        					itemDetailsDel, 
+			        					parserConfiguration.getItemCodePattern(), 
+			        					1, 
+			        					parserConfiguration.getItemCodePatternGroup());
 			        			
-				        		if ( itemProperties.length >= itemFieldsCount )
-				        		{
-				        			String itemCode = itemProperties[parserConfiguration.getItemCodeIndex()];
-				        			String itemName = itemProperties[parserConfiguration.getItemNameIndex()];
-				        			
-				        			ReceiptItemDTO itemDTO = new ReceiptItemDTO();
-				        			itemsSet.add(itemDTO);
-				        			itemDTO.setName(itemCode + " " + itemName);
-				        			
-				        			/*
-					        		 * Get Item Price/Qty details
-					        		 */
-				        			String quantityPriceStr  = StringUtils.EMPTY;
-				        			String itemTotalPriceStr = StringUtils.EMPTY;
-				        			
-				        			if ( (itemsPricesDel.length - itemsPricesIdx) >= 2)
-				        			{
-				        				quantityPriceStr  = itemsPricesDel[itemsPricesIdx].trim();
-				        				itemTotalPriceStr = itemsPricesDel[itemsPricesIdx + 1].trim();
-				        				
-				        				if ( quantityPriceStr.indexOf("@") != -1 )
-				        				{
-				        					this.setMultipleQuantityPrice(
-				        							quantityPriceStr, 
-				        							itemTotalPriceStr, 
-				        							itemsPricesIdx,
-				        							itemDTO);
-				        					
-				        					itemsPricesIdx += 2;
-				        				}
-				        				else
-				        				{
-					        				this.setSingleQuantityPrice(itemDTO, quantityPriceStr);
-			        						
-					        				itemsPricesIdx += 1;
-				        				}
-				        			}
-				        			else if ( (itemsPricesDel.length - itemsPricesIdx) == 1)
-				        			{
-				        				this.setSingleQuantityPrice(itemDTO, itemsPricesDel[itemsPricesIdx++]);
-		        						
-				        				itemsPricesIdx += 1;
-				        			}
-				        			else
-				        			{
-				        				LOGGER.error(cMethodName + "::Exception:Prices array does not match the items array!");
-				        			}
-				        		}
+			        			String itemName = new RegexParser().getGroupValueByRegex(
+			        					itemDetailsDel, 
+			        					parserConfiguration.getItemNamePattern(), 
+			        					1, 
+			        					parserConfiguration.getItemNamePatternGroup()); 
+			        			
+			        			ReceiptItemDTO itemDTO = new ReceiptItemDTO();
+			        			itemDTO.setName(itemCode + StringUtils.SPACE + itemName.trim());
+			        			itemsSet.add(itemDTO);
+			        			
+			        			/*
+				        		 * Get Item Price/Qty details
+				        		 */
+			        			String quantityPriceStr  = StringUtils.EMPTY;
+			        			String itemTotalPriceStr = StringUtils.EMPTY;
+			        			
+			        			//---prices parsing
+			        			if ( (itemsPricesDel.length - itemsPricesIdx) >= 2)
+			        			{
+			        				quantityPriceStr  = itemsPricesDel[itemsPricesIdx].trim();
+			        				itemTotalPriceStr = itemsPricesDel[itemsPricesIdx + 1].trim();
+			        				
+			        				if ( quantityPriceStr.indexOf("@") != -1 )
+			        				{
+			        					itemsPricesIdx = this.setMultipleQuantityPrice(
+			        							itemDTO, quantityPriceStr, itemTotalPriceStr, itemsPricesIdx);
+			        				}
+			        				else
+			        				{
+			        					itemsPricesIdx = this.setSingleQuantityPrice(
+			        							itemDTO, quantityPriceStr, itemsPricesIdx);
+			        				}
+			        			}
+			        			else if ( (itemsPricesDel.length - itemsPricesIdx) == 1)
+			        			{
+			        				itemsPricesIdx = this.setSingleQuantityPrice(
+			        							itemDTO, itemsPricesDel[itemsPricesIdx], itemsPricesIdx);
+			        			}
+			        			else
+			        			{
+			        				LOGGER.error(cMethodName + "::Exception:Prices array does not match the items array!");
+			        			}
 			        		}
 		        		}
 		        	}
@@ -134,9 +132,10 @@ public class ItemsDataParserHomedepot extends ItemsDataParser
 	}
 
 
-	protected void setSingleQuantityPrice(
+	protected int setSingleQuantityPrice(
 			ReceiptItemDTO itemDTO, 
-			String itemTotalPriceStr)
+			String itemTotalPriceStr,
+			int itemsPricesIdx)
 	{
 		double itemTotalPrice = 0;
 		
@@ -146,14 +145,16 @@ public class ItemsDataParserHomedepot extends ItemsDataParser
 			itemDTO.setPrice(new BigDecimal(itemTotalPrice).setScale(2, BigDecimal.ROUND_UP));
 			itemDTO.setQuantity(1);
 		}
+		
+		return (itemsPricesIdx + 1);
 	}
 	
 	
-	protected void setMultipleQuantityPrice(
+	protected int setMultipleQuantityPrice(
+			ReceiptItemDTO itemDTO,
 			String quantityPriceStr, 
 			String itemTotalPriceStr, 
-			int itemsPricesIdx,
-			ReceiptItemDTO itemDTO)
+			int itemsPricesIdx)
 	{
 		int quantity = 0;
 		double itemTotalPrice = 0;
@@ -174,5 +175,7 @@ public class ItemsDataParserHomedepot extends ItemsDataParser
 				itemDTO.setPrice(new BigDecimal(itemTotalPrice).setScale(2, BigDecimal.ROUND_UP));
 			}
 		}
+		
+		return (itemsPricesIdx + 2);
 	}
 }

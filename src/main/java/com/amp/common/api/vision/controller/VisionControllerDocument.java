@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,6 @@ import com.google.api.gax.longrunning.OperationFuture;
 import com.google.cloud.WriteChannel;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.Storage.BucketGetOption;
 import com.google.cloud.vision.v1.AsyncAnnotateFileRequest;
 import com.google.cloud.vision.v1.AsyncAnnotateFileResponse;
@@ -57,32 +57,10 @@ public class VisionControllerDocument extends VisionControllerBase
 	private final static Logger LOG = 
 			LoggerFactory.getLogger(VisionControllerDocument.class);
 	
-	private String ocrBucket;
-
-	@Autowired
-	private Storage storage;
-
-	@Autowired
-	private ResourceLoader resourceLoader;
-
-	@Autowired
-	private DocumentOcrTemplate documentOcrTemplate;
-
-	@Autowired private OcrParserService ocrParserService;
-	
-	public OcrParserService getOcrParserService() {
-		return ocrParserService;
-	}
-
-	public void setOcrParserService(OcrParserService ocrParserService) {
-		this.ocrParserService = ocrParserService;
-	}
-	
-	private final OcrStatusReporter ocrStatusReporter;
 	
 	public VisionControllerDocument() 
 	{
-		this.ocrStatusReporter = new OcrStatusReporter();
+		
 	}
 	
 	@GetMapping("/")
@@ -174,85 +152,6 @@ public class VisionControllerDocument extends VisionControllerBase
 		          response.get(180, TimeUnit.SECONDS).getResponsesList();
 	
 		      //---
-		      /*
-		      JsonObject receiptsPayload = new JsonObject();
-			  JsonArray receiptsPayloadArray = new JsonArray();
-			  receiptsPayload.add("results", receiptsPayloadArray);
-			  
-			  JsonObject pathObject = new JsonObject();
-			  pathObject.addProperty("gcsSourcePath", gcsSourcePath);
-			  pathObject.addProperty("gcsDestinationPath", gcsDestinationPath);
-			  receiptsPayload.add("file", pathObject);
-			  
-		      // Once the request has completed and the System.output has been
-		      // written to GCS, we can list all the System.output files.
-		      Storage storage = StorageOptions.getDefaultInstance().getService();
-	
-		      // Get the destination location from the gcsDestinationPath
-		      Pattern pattern = Pattern.compile("gs://([^/]+)/(.+)");
-		      Matcher matcher = pattern.matcher(gcsDestinationPath);
-	
-		      if (matcher.find())
-		      {
-			        String bucketName = matcher.group(1);
-			        String prefix = matcher.group(2);
-		
-			        // Get the list of objects with the given prefix from the GCS bucket
-			        Bucket bucket = storage.get(bucketName);
-			        com.google.api.gax.paging.Page<Blob> pageList = bucket.list(BlobListOption.prefix(prefix));
-		
-			        Blob firstOutputFile = null;
-		
-			        // List objects with the given prefix.
-			        LOG.info("Output files:");
-			        for (Blob blob : pageList.iterateAll()) 
-			        {
-			        	LOG.info(blob.getName());
-		
-			        	// Process the first System.output file from GCS.
-			        	// Since we specified batch size = 2, the first response contains
-			        	// the first two pages of the input file.
-			        	if (firstOutputFile == null) 
-			        	{
-			        		firstOutputFile = blob;
-			        	}
-			        }
-		
-			        // Get the contents of the file and convert the JSON contents to an AnnotateFileResponse
-			        // object. If the Blob is small read all its content in one request
-			        // (Note: the file is a .json file)
-			        // Storage guide: https://cloud.google.com/storage/docs/downloading-objects
-			        String jsonContents = new String(firstOutputFile.getContent());
-			        Builder builder = AnnotateFileResponse.newBuilder();
-			        JsonFormat.parser().merge(jsonContents, builder);
-		
-			        // Build the AnnotateFileResponse object
-			        AnnotateFileResponse annotateFileResponse = builder.build();
-		
-			        // Parse through the object to get the actual response for the first page of the input file.
-			        AnnotateImageResponse imageResponse = annotateFileResponse.getResponses(0);
-			       
-			        // Here we print the full text from the first page.
-			        // The response contains more information:
-			        // annotation/pages/blocks/paragraphs/words/symbols
-			        // including confidence score and bounding boxes
-			        JsonObject receiptPayload = new OcrResponseParser().buildResponsePayload(imageResponse);
-			    	
-			        receiptsPayloadArray.add(receiptPayload);
-			        
-			        TextAnnotation receiptAnnotation = imageResponse.getFullTextAnnotation();
-			    	
-			    	ReceiptDTO receiptObject = this.getOcrParserService().processVisionApiResponse(
-			    			receiptPayload, receiptAnnotation);
-			    	
-		      	
-			    	receiptObjects.add(receiptObject);
-		      } 
-		      else 
-		      {
-		    	  	LOG.info("No MATCH");
-		      }
-		      */
 
 		      receiptObjects =  this.processDocumentVisionParser(
 		    		  gcsSourcePath, gcsDestinationPath);
@@ -308,22 +207,27 @@ public class VisionControllerDocument extends VisionControllerBase
 		try
 		{
 			// Uploads the document to the GCS bucket
+			String documentNamePrefix = StringUtils.EMPTY;
+			if ( !isGSDocument(documentUrl) )
+			{
+				documentNamePrefix = "input" + "/";
+			}
+			
 			Resource documentResource = resourceLoader.getResource(documentUrl);
-			BlobId outputBlobId = BlobId.of(ocrBucket, documentResource.getFilename());
-			BlobInfo blobInfo =
-					BlobInfo.newBuilder(outputBlobId)
-							.setContentType(getFileType(documentResource))
-							.build();
+			BlobId outputBlobId = BlobId.of(ocrBucket, documentNamePrefix + documentResource.getFilename());
+			BlobInfo blobInfo = BlobInfo.newBuilder(outputBlobId).
+					setContentType(getFileType(documentResource)).build();
 	
 			try (WriteChannel writer = storage.writer(blobInfo)) 
 			{
 				ByteStreams.copy(documentResource.getInputStream(), Channels.newOutputStream(writer));
+				writer.close();
 			}
 	
 			// Run OCR on the document
 			GoogleStorageLocation gcsSourcePath =
 					GoogleStorageLocation.forFile(outputBlobId.getBucket(), outputBlobId.getName());
-	
+			
 			GoogleStorageLocation gcsDestinationPath = GoogleStorageLocation.forFolder(
 					outputBlobId.getBucket(), gcsSourcePath.getBlobName().replace("input", "output"));
 	
@@ -331,86 +235,9 @@ public class VisionControllerDocument extends VisionControllerBase
 					documentOcrTemplate.runOcrForDocument(gcsSourcePath, gcsDestinationPath);
 	
 			ocrStatusReporter.registerFuture(gcsSourcePath.uriString(), result);
-	
+			ocrStatusReporter.registerFuture(gcsDestinationPath.uriString(), result);
 			//---
-			/*
-			JsonObject receiptsPayload = new JsonObject();
-			JsonArray receiptsPayloadArray = new JsonArray();
-			receiptsPayload.add("results", receiptsPayloadArray);
-			  
-			JsonObject pathObject = new JsonObject();
-			pathObject.addProperty("gcsSourcePath", gcsSourcePath.uriString());
-			pathObject.addProperty("gcsDestinationPath", gcsDestinationPath.uriString());
-			receiptsPayload.add("file", pathObject);
 			
-			// Once the request has completed and the System.output has been
-			// written to GCS, we can list all the System.output files.
-			Storage storage = StorageOptions.getDefaultInstance().getService();
-	
-			// Get the destination location from the gcsDestinationPath
-		    Pattern pattern = Pattern.compile("gs://([^/]+)/(.+)");
-		    Matcher matcher = pattern.matcher(gcsDestinationPath.uriString());
-		
-		    if (matcher.find())
-		    {
-		        String bucketName = matcher.group(1);
-		        String prefix = matcher.group(2);
-	
-		        // Get the list of objects with the given prefix from the GCS bucket
-		        Bucket bucket = storage.get(bucketName);
-		        com.google.api.gax.paging.Page<Blob> pageList = bucket.list(BlobListOption.prefix(prefix));
-	
-		        Blob firstOutputFile = null;
-	
-		        // List objects with the given prefix.
-		        LOG.info("Output files:");
-		        for (Blob blob : pageList.iterateAll()) 
-		        {
-		        	LOG.info(blob.getName());
-	
-		        	// Process the first System.output file from GCS.
-		        	// Since we specified batch size = 2, the first response contains
-		        	// the first two pages of the input file.
-		        	if (firstOutputFile == null) 
-		        	{
-		        		firstOutputFile = blob;
-		        	}
-		        }
-	
-		        // Get the contents of the file and convert the JSON contents to an AnnotateFileResponse
-		        // object. If the Blob is small read all its content in one request
-		        // (Note: the file is a .json file)
-		        // Storage guide: https://cloud.google.com/storage/docs/downloading-objects
-		        String jsonContents = new String(firstOutputFile.getContent());
-		        Builder builder = AnnotateFileResponse.newBuilder();
-		        JsonFormat.parser().merge(jsonContents, builder);
-	
-		        // Build the AnnotateFileResponse object
-		        AnnotateFileResponse annotateFileResponse = builder.build();
-	
-		        // Parse through the object to get the actual response for the first page of the input file.
-		        AnnotateImageResponse imageResponse = annotateFileResponse.getResponses(0);
-		       
-		        // Here we print the full text from the first page.
-		        // The response contains more information:
-		        // annotation/pages/blocks/paragraphs/words/symbols
-		        // including confidence score and bounding boxes
-		        JsonObject receiptPayload = new OcrResponseParser().buildResponsePayload(imageResponse);
-		    	
-		        receiptsPayloadArray.add(receiptPayload);
-		        
-		        TextAnnotation receiptAnnotation = imageResponse.getFullTextAnnotation();
-		    	
-		    	ReceiptDTO receiptObject = this.getOcrParserService().processVisionApiResponse(
-		    			receiptPayload, receiptAnnotation);
-		    	
-		    	receiptObjects.add(receiptObject);
-		    }
-		    else 
-		    {
-		    	LOG.info("No MATCH");
-		    }
-		    */
 			receiptObjects =  this.processDocumentVisionParser(
 		    		  gcsSourcePath.uriString(), gcsDestinationPath.uriString());
 		}
