@@ -15,13 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gcp.storage.GoogleStorageLocation;
 import org.springframework.cloud.gcp.vision.DocumentOcrResultSet;
-import org.springframework.cloud.gcp.vision.DocumentOcrTemplate;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,9 +26,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.amp.common.api.vision.application.VisionApiConstants;
 import com.amp.common.api.vision.dto.ReceiptDTO;
-import com.amp.common.api.vision.service.OcrParserService;
-import com.amp.common.api.vision.utils.OcrStatusReporter;
 import com.google.api.client.util.ByteStreams;
 import com.google.api.gax.longrunning.OperationFuture;
 import com.google.cloud.WriteChannel;
@@ -210,7 +206,7 @@ public class VisionControllerDocument extends VisionControllerBase
 			String documentNamePrefix = StringUtils.EMPTY;
 			if ( !isGSDocument(documentUrl) )
 			{
-				documentNamePrefix = "input" + "/";
+				documentNamePrefix = VisionApiConstants.BUCKET_INPUT_FOLDER + "/";
 			}
 			
 			Resource documentResource = resourceLoader.getResource(documentUrl);
@@ -229,7 +225,9 @@ public class VisionControllerDocument extends VisionControllerBase
 					GoogleStorageLocation.forFile(outputBlobId.getBucket(), outputBlobId.getName());
 			
 			GoogleStorageLocation gcsDestinationPath = GoogleStorageLocation.forFolder(
-					outputBlobId.getBucket(), gcsSourcePath.getBlobName().replace("input", "output"));
+					outputBlobId.getBucket(), gcsSourcePath.getBlobName().replace(
+							VisionApiConstants.BUCKET_INPUT_FOLDER, 
+							VisionApiConstants.BUCKET_OUTPUTT_FOLDER));
 	
 			ListenableFuture<DocumentOcrResultSet> result =
 					documentOcrTemplate.runOcrForDocument(gcsSourcePath, gcsDestinationPath);

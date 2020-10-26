@@ -196,53 +196,84 @@ public class VisionControllerBase
 		}
 	}
 	
-	protected Blob getDocumentFirstOutputBlob(String gcsDestinationPath)
+	protected Blob getDocumentFirstOutputBlob(String gcsDestinationPath) throws Exception
 	{
 		Blob firstOutputFile = null;
 		
-		// Get the destination location from the gcsDestinationPath
-		Pattern pattern = Pattern.compile("gs://([^/]+)/(.+)");
-		Matcher matcher = pattern.matcher(gcsDestinationPath);
-	
-		if (matcher.find())
+		try
 		{
-			String bucketName = matcher.group(1);
-			String prefix = matcher.group(2);
-			
-			// Once the request has completed and the System.output has been
-			// written to GCS, we can list all the System.output files.
-			//Storage storage = StorageOptions.getDefaultInstance().getService();
-			
-			// Get the list of objects with the given prefix from the GCS bucket
-			Bucket bucket = storage.get(bucketName);
-			
-			//@SuppressWarnings("unused")
-			Page<Blob> pageListAll = bucket.list();
-			for (Blob blob : pageListAll.iterateAll()) 
+			// Get the destination location from the gcsDestinationPath
+			Pattern pattern = Pattern.compile("gs://([^/]+)/(.+)");
+			Matcher matcher = pattern.matcher(gcsDestinationPath);
+		
+			if (matcher.find())
 			{
-				LOG.info(blob.getName());
-			}
-			
-			Page<Blob> pageList = bucket.list(BlobListOption.prefix(prefix));
-			
-			// List objects with the given prefix.
-			LOG.info("Output files:");
-			for (Blob blob : pageList.iterateAll()) 
-			{
-				LOG.info(blob.getName());
-	
-				// Process the first System.output file from GCS.
-				// Since we specified batch size = 2, the first response contains
-				// the first two pages of the input file.
-				if (firstOutputFile == null)
+				String bucketName = matcher.group(1);
+				String prefix = matcher.group(2);
+				
+				// Once the request has completed and the System.output has been
+				// written to GCS, we can list all the System.output files.
+				//Storage storage = StorageOptions.getDefaultInstance().getService();
+				
+				// Get the list of objects with the given prefix from the GCS bucket
+				Bucket bucket = storage.get(bucketName);
+				
+				//@SuppressWarnings("unused")
+				boolean isOutputFileAvailable = false;
+				
+				for( int attempt = 1; attempt <= 5; ++attempt )
 				{
-					firstOutputFile = blob;
+					Page<Blob> pageListAll = bucket.list(BlobListOption.prefix(prefix));
+					for (Blob blob : pageListAll.iterateAll()) 
+					{
+						isOutputFileAvailable = true;
+						LOG.info(blob.getName());
+					}
+					
+					if ( isOutputFileAvailable )
+					{
+						break;
+					}
+					else
+					{
+						Thread.sleep(5000);
+					}
+				}
+				
+				if ( isOutputFileAvailable )
+				{
+					Page<Blob> pageList = bucket.list(BlobListOption.prefix(prefix));
+					// List objects with the given prefix.
+					LOG.info("Output files:");
+					
+					for (Blob blob : pageList.iterateAll()) 
+					{
+						LOG.info(blob.getName());
+			
+						// Process the first System.output file from GCS.
+						// Since we specified batch size = 2, the first response contains
+						// the first two pages of the input file.
+						if (firstOutputFile == null)
+						{
+							firstOutputFile = blob;
+						}
+					}
+				}
+				else
+				{
+					throw new Exception("The GS Output File is not Available: " + gcsDestinationPath);
 				}
 			}
+			else
+			{
+				LOG.error("No MATCH the GS File Pattern: " + gcsDestinationPath);
+			}
 		}
-		else
+		catch (Exception e) 
 		{
-			LOG.info("No MATCH");
+			LOG.error(e.getMessage(), e);
+			
+			throw e;
 		}
 		
 		return firstOutputFile;

@@ -7,6 +7,10 @@ public class VisionApiConstants
 {
     public static final String PROPERTY_FILE_NAME = "amp-vision-api.properties";
     
+    public static final String BUCKET_INPUT_FOLDER = "input";
+    
+    public static final String BUCKET_OUTPUTT_FOLDER = "output";
+    
     public static Set<String> HANDLERS_PACKAGERS = 
 			new HashSet<String>(){
 		        /**
