@@ -17,25 +17,35 @@ apply plugin: "io.spring.dependency-management"
 
 
 apply plugin: 'war'
-apply plugin: 'project-report'
 apply plugin: 'eclipse'
 apply plugin: "jacoco"
 apply plugin: 'project-report'
 apply plugin: 'maven-publish'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+bootWar {
+	group = 'amp.service.common'
+    archiveName = "amp-vision-api.war"
+	baseName = "amp-vision-api"
+	// version = '0.0.1-SNAPSHOT'
+	description = """amp-vision-api"""
+	rootSpec.exclude("**/log4j2.properties")
+}
 
 war {
 	group = 'amp.service.common'
-    archiveName = "amp-gcp-vision-api.war"
-	baseName = "amp-gcp-vision-api"
-	version = '0.0.1-SNAPSHOT'
-	description = """amp-gcp-vision-api"""
+    archiveName = "amp-vision-api.war"
+	baseName = "amp-vision-api"
+	// version = '0.0.1-SNAPSHOT'
+	description = """amp-vision-api"""
 	rootSpec.exclude("**/log4j2.properties")
 }
 
 configurations.all {
 	exclude group: "log4j", module:"log4j"
 	exclude group: "org.slf4j", module:"slf4j-simple"
+	exclude group: "org.slf4j", module:"slf4j-log4j12"
 	exclude group: 'commons-logging', module: 'commons-logging'
 	exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     exclude module: 'logback-classic'
@@ -66,10 +76,15 @@ dependencies {
     compile group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter-vision', version:'1.2.4.RELEASE'
     // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-gcp-starter-storage
 	compile group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter-storage', version: '1.2.4.RELEASE'
-
-	compile("org.springframework.boot:spring-boot-starter-data-jpa:2.2.6.RELEASE")
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version:'2.2.6.RELEASE'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version:'2.2.6.RELEASE'
+	
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version:"$springBootVersion"
+    implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
+    //compile "org.springframework.boot:spring-boot-starter-tomcat:$springBootVersion"
+    providedRuntime "org.springframework.boot:spring-boot-starter-tomcat:$springBootVersion"
+    implementation "org.springframework.boot:spring-boot-starter-log4j2:$springBootVersion"
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version:"$springBootVersion"
+    compile "org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion"
+    compile("org.springframework.boot:spring-boot-starter-aop:$springBootVersion")
     
     // https://mvnrepository.com/artifact/com.google.cloud/google-cloud-storage
 	compile group: 'com.google.cloud', name: 'google-cloud-storage', version: '1.111.2'
