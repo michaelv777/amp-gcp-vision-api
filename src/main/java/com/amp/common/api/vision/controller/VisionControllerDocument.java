@@ -84,8 +84,7 @@ public class VisionControllerDocument extends VisionControllerBase
 	   */
 	  @GetMapping("/detectDocumentTextGcs")
 	  public List<ReceiptDTO> detectDocumentTextGcs(
-			  @RequestParam("gcsSourcePath") String gcsSourcePath, 
-			  @RequestParam("gcsDestinationPath") String gcsDestinationPath,
+			  @RequestParam("gcsSourcePath") String gcsSourcePath,
 			  HttpServletRequest webRequest) throws Exception
 	  {
 		  ImageAnnotatorClient client = null;
@@ -114,6 +113,10 @@ public class VisionControllerDocument extends VisionControllerBase
 		              .build();
 	
 		      // Set the GCS destination path for where to save the results.
+		      String gcsDestinationPath = gcsSourcePath.replace(
+		    		  VisionApiConstants.BUCKET_INPUT_FOLDER, 
+		    		  VisionApiConstants.BUCKET_OUTPUTT_FOLDER).concat("/");
+		      
 		      GcsDestination gcsDestination =
 		          GcsDestination.newBuilder().setUri(gcsDestinationPath).build();
 	
@@ -192,8 +195,8 @@ public class VisionControllerDocument extends VisionControllerBase
 		return new ModelAndView("viewDocument", map);
 	}
 	
-	@GetMapping("/detectDocumentTextGcsByURL")
-	public List<ReceiptDTO> detectDocumentTextGcsByURL(
+	@GetMapping("/detectDocumentTextGcsByUrl")
+	public List<ReceiptDTO> detectDocumentTextGcsByUrl(
 			@RequestParam("documentUrl") String documentUrl,
 			HttpServletRequest webRequest) throws Exception 
 	{

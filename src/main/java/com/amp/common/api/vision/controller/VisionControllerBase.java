@@ -11,7 +11,9 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.gcp.vision.CloudVisionTemplate;
 import org.springframework.cloud.gcp.vision.DocumentOcrTemplate;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 
 import com.amp.common.api.vision.dto.ReceiptDTO;
@@ -52,6 +54,12 @@ public class VisionControllerBase
 	@Autowired
 	protected DocumentOcrTemplate documentOcrTemplate;
 
+	@Autowired 
+	protected CloudVisionTemplate cloudVisionTemplate;
+	
+	@Autowired 
+	protected Environment env;
+	
 	protected String ocrBucket;
 	
 	protected final OcrStatusReporter ocrStatusReporter = 
@@ -126,6 +134,20 @@ public class VisionControllerBase
 	public void setOcrBucket(String ocrBucket) {
 		this.ocrBucket = ocrBucket;
 	}
+	
+	/**
+	 * @return the env
+	 */
+	public Environment getEnv() {
+		return env;
+	}
+
+	/**
+	 * @param env the env to set
+	 */
+	public void setEnv(Environment env) {
+		this.env = env;
+	}
 
 	/**
 	 * @return the ocrStatusReporter
@@ -143,14 +165,13 @@ public class VisionControllerBase
 		try 
 		{
 			// ---
-			
 			JsonObject receiptsPayload = new JsonObject();
 			JsonArray receiptsPayloadArray = new JsonArray();
 			receiptsPayload.add("results", receiptsPayloadArray);
 
 			JsonObject pathObject = new JsonObject();
-			pathObject.addProperty("gcsSourcePath", gcsSourcePath);
-			pathObject.addProperty("gcsDestinationPath", gcsDestinationPath);
+			pathObject.addProperty("sourcePath", gcsSourcePath);
+			pathObject.addProperty("destinationPath", gcsDestinationPath);
 			receiptsPayload.add("file", pathObject);
 			
 			Blob firstOutputFile = this.getDocumentFirstOutputBlob(gcsDestinationPath);

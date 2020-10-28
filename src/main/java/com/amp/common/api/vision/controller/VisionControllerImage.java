@@ -34,9 +34,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.gcp.vision.CloudVisionTemplate;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -44,7 +41,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.amp.common.api.vision.dto.ReceiptDTO;
-import com.amp.common.api.vision.service.OcrParserService;
 import com.amp.common.api.vision.utils.OcrResponseParser;
 import com.google.cloud.vision.v1.AnnotateImageRequest;
 import com.google.cloud.vision.v1.AnnotateImageResponse;
@@ -73,26 +69,18 @@ import com.google.protobuf.Descriptors;
  * practical application of this usage.
  */
 @RestController
-public class VisionControllerImage 
+public class VisionControllerImage extends VisionControllerBase
 {
 	private final static Logger LOG = 
 			LoggerFactory.getLogger(VisionControllerImage.class);
 	
-	@Autowired private ResourceLoader resourceLoader;
+	//@Autowired private ResourceLoader resourceLoader;
 
 	// [START spring_vision_autowire]
-	@Autowired private CloudVisionTemplate cloudVisionTemplate;
+	//@Autowired private CloudVisionTemplate cloudVisionTemplate;
 	  // [END spring_vision_autowire]
 	
-	@Autowired private OcrParserService ocrParserService;
-	
-	public OcrParserService getOcrParserService() {
-		return ocrParserService;
-	}
-
-	public void setOcrParserService(OcrParserService ocrParserService) {
-		this.ocrParserService = ocrParserService;
-	}
+	//@Autowired private OcrParserService ocrParserService;
 
 	/**
 	   * This method downloads an image from a URL and sends its contents to the Vision API for label
@@ -199,8 +187,96 @@ public class VisionControllerImage
 		    }
 	  }
 
+	  /**
+	   * Performs document text detection on a local image file.
+	   *
+	   * @param imagePath The path to the local file to detect document text on.
+	   * @throws Exception on errors while closing the client.
+	   * @throws IOException on Input/Output errors.
+	   */
+	  // [START vision_fulltext_detection]
 	  @GetMapping("/detectImageTextLocal")
-	  public List<String> detectImageTextLocal(
+	  public List<ReceiptDTO> detectImageTextLocal(
+			  @RequestParam("imagePath") String imagePath, 
+			  HttpServletRequest webRequest) throws IOException 
+	  {
+			ImageAnnotatorClient client = null;
+			
+			FileInputStream fis = null;
+			
+			List<ReceiptDTO> receiptObjects = new LinkedList<ReceiptDTO>();
+		    
+		    // Initialize client that will be used to send requests. This client only needs to be created
+		    // once, and can be reused for multiple requests. After completing all of your requests, call
+		    // the "close" method on the client to safely clean up any remaining background resources.
+		    try
+		    {
+		    	JsonObject receiptsPayload = new JsonObject();
+				JsonArray receiptsPayloadArray = new JsonArray();
+				receiptsPayload.add("results", receiptsPayloadArray);
+				
+		    	JsonObject pathObject = new JsonObject();
+		    	pathObject.addProperty("sourcePath", imagePath);
+		    	receiptsPayload.add("file", pathObject);
+		    	
+		    	fis = new FileInputStream(imagePath);
+		    	
+		    	ByteString imgBytes = ByteString.readFrom(fis);
+		    	
+		    	Image img = Image.newBuilder().setContent(imgBytes).build();
+		    	
+		    	Feature feat = Feature.newBuilder().setType(Type.DOCUMENT_TEXT_DETECTION).build();
+		    	
+		    	List<AnnotateImageRequest> requests = new ArrayList<>();
+			    AnnotateImageRequest request =
+			        AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(img).build();
+			    requests.add(request);
+			    
+		    	client = ImageAnnotatorClient.create();
+		    			
+			    BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
+			    List<AnnotateImageResponse> imageResponses = response.getResponsesList();
+			    client.close();
+			    
+			    for (AnnotateImageResponse imageResponse : imageResponses) 
+			    {
+			    	TextAnnotation receiptAnnotation = imageResponse.getFullTextAnnotation();
+			    	
+			    	JsonObject receiptPayload = new OcrResponseParser().buildResponsePayload(
+			    			imageResponse);
+			    	
+			    	receiptsPayloadArray.add(receiptPayload);
+			    	
+			    	ReceiptDTO receiptObject = this.getOcrParserService().processVisionApiResponse(
+			    			receiptPayload, receiptAnnotation);
+			    	
+			    	receiptObjects.add(receiptObject);
+			    }
+			    
+			    return receiptObjects;
+		    }
+		    catch( Exception e )
+		    {
+		    	LOG.error(e.getMessage(), e);
+		    	
+		    	throw e;
+		    }
+		    finally
+		    {
+		    	if ( client != null )
+		    	{
+		    		client.close();
+		    	}
+		    	
+		    	if ( fis != null )
+		    	{
+		    		fis.close();
+		    	}
+		    }
+	  }
+
+	@GetMapping("/detectImageTextLocalExt")
+	  public List<String> detectImageTextLocalExt(
 			  String imagePath, HttpServletRequest webRequest)
 	  {
 			// Initialize client that will be used to send requests. This client only needs to be created
@@ -259,7 +335,6 @@ public class VisionControllerImage
 			        {
 			        	String record =	StringUtils.EMPTY;
 			        	
-				        //annotation.getAllFields().forEach((k, v) ->
 			        	for( Map.Entry<Descriptors.FieldDescriptor, Object> cannotations : annotation.getAllFields().entrySet() )
 			        	{
 			        		//String record = String.format("%s : %s%n", k, v.toString());
@@ -272,8 +347,6 @@ public class VisionControllerImage
 				          	record = String.format("%s", v.toString());
 				          		
 				          	resultData.add(record);
-				          	
-				          //});
 			        	}
 			        }
 			        
@@ -295,106 +368,115 @@ public class VisionControllerImage
 		    	}
 		    }
 	  }
-	  
-	  /**
-	   * Performs document text detection on a local image file.
-	   *
-	   * @param imagePath The path to the local file to detect document text on.
-	   * @throws Exception on errors while closing the client.
-	   * @throws IOException on Input/Output errors.
-	   */
-	  // [START vision_fulltext_detection]
-	  @GetMapping("/detectImageTextLocalExt")
-	  public List<ReceiptDTO> detectImageTextLocalExt(
-			  @RequestParam("imagePath") String imagePath, 
-			  HttpServletRequest webRequest) throws IOException 
-	  {
-			ImageAnnotatorClient client = null;
-			
-			FileInputStream fis = null;
-			
-			List<ReceiptDTO> receiptObjects = new LinkedList<ReceiptDTO>();
-			
-			JsonObject receiptsPayload = new JsonObject();
-			JsonArray receiptsPayloadArray = new JsonArray();
-			receiptsPayload.add("results", receiptsPayloadArray);
-		    
-		    // Initialize client that will be used to send requests. This client only needs to be created
-		    // once, and can be reused for multiple requests. After completing all of your requests, call
-		    // the "close" method on the client to safely clean up any remaining background resources.
-		    try
-		    {
-		    	JsonObject pathObject = new JsonObject();
-		    	pathObject.addProperty("path", imagePath);
-		    	receiptsPayload.add("file", pathObject);
-		    	
-		    	fis = new FileInputStream(imagePath);
-		    	
-		    	ByteString imgBytes = ByteString.readFrom(fis);
-		    	
-		    	Image img = Image.newBuilder().setContent(imgBytes).build();
-		    	
-		    	Feature feat = Feature.newBuilder().setType(Type.DOCUMENT_TEXT_DETECTION).build();
-		    	
-		    	List<AnnotateImageRequest> requests = new ArrayList<>();
-			    AnnotateImageRequest request =
-			        AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(img).build();
-			    requests.add(request);
-			    
-		    	client = ImageAnnotatorClient.create();
-		    			
-			    BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
-			    List<AnnotateImageResponse> imageResponses = response.getResponsesList();
-			    client.close();
-			    
-			    for (AnnotateImageResponse imageResponse : imageResponses) 
-			    {
-			    	TextAnnotation receiptAnnotation = imageResponse.getFullTextAnnotation();
-			    	
-			    	JsonObject receiptPayload = new OcrResponseParser().buildResponsePayload(
-			    			imageResponse);
-			    	
-			    	receiptsPayloadArray.add(receiptPayload);
-			    	
-			    	ReceiptDTO receiptObject = this.getOcrParserService().processVisionApiResponse(
-			    			receiptPayload, receiptAnnotation);
-			    	
-			    	receiptObjects.add(receiptObject);
-			    }
-			    
-			    return receiptObjects;
-		    }
-		    catch( Exception e )
-		    {
-		    	LOG.error(e.getMessage(), e);
-		    	
-		    	throw e;
-		    }
-		    finally
-		    {
-		    	if ( client != null )
-		    	{
-		    		client.close();
-		    	}
-		    	
-		    	if ( fis != null )
-		    	{
-		    		fis.close();
-		    	}
-		    }
-	  }
-	  // [END vision_fulltext_detection]
-	  
-	  /**
+	
+	/**
 	   * Performs document text detection on a remote image on Google Cloud Storage.
 	   *
-	   * @param gcsPath The path to the remote file on Google Cloud Storage to detect document text on.
+	   * @param gcsSourcePath The path to the remote file on Google Cloud Storage to detect document text on.
 	   * @throws Exception on errors while closing the client.
 	   * @throws IOException on Input/Output errors.
 	   */
 	  // [START vision_fulltext_detection_gcs]
 	  @GetMapping("/detectImageTextGcs")
-	  public List<String> detectImageTextGcs(String gcsPath, HttpServletRequest webRequest) throws IOException 
+	  public List<ReceiptDTO> detectImageTextGcs(String gcsSourcePath, HttpServletRequest webRequest) throws IOException 
+	  {
+		
+		  ImageAnnotatorClient client = null;
+		  	
+		  List<ReceiptDTO> receiptObjects = new LinkedList<ReceiptDTO>();
+			  	
+		  List<AnnotateImageRequest> requests = new ArrayList<>();
+		    
+		  // Initialize client that will be used to send requests. This client only needs to be created
+		  // once, and can be reused for multiple requests. After completing all of your requests, call
+		  // the "close" method on the client to safely clean up any remaining background resources.
+		  try
+		  {
+			  // Set the GCS source path for the remote file.
+			  /*
+			  GcsSource gcsSource = GcsSource.newBuilder().setUri(gcsSourcePath).build();
+			  
+			  // Set the GCS source path for the remote file.
+			  GoogleStorageLocation gcsDestinationPath = GoogleStorageLocation.forFolder(
+						outputBlobId.getBucket(), gcsSourcePath.getBlobName().replace(
+								VisionApiConstants.BUCKET_INPUT_FOLDER, 
+								VisionApiConstants.BUCKET_OUTPUTT_FOLDER));
+			  */
+			  // ---
+			  JsonObject receiptsPayload = new JsonObject();
+			  JsonArray receiptsPayloadArray = new JsonArray();
+			  receiptsPayload.add("results", receiptsPayloadArray);
+
+			  JsonObject pathObject = new JsonObject();
+			  pathObject.addProperty("sourcePath", gcsSourcePath);
+			  //pathObject.addProperty("gcsDestinationPath", gcsDestinationPath.uriString());
+			  receiptsPayload.add("file", pathObject);
+				
+			  ImageSource imgSource = ImageSource.newBuilder().setGcsImageUri(gcsSourcePath).build();
+			
+			  Image img = Image.newBuilder().setSource(imgSource).build();
+	    	
+			  Feature feat = Feature.newBuilder().setType(Type.DOCUMENT_TEXT_DETECTION).build();
+		    
+			  AnnotateImageRequest request =
+		        AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(img).build();
+			  requests.add(request);
+		    
+			  client = ImageAnnotatorClient.create();
+	    			
+			  BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
+			  List<AnnotateImageResponse> responses = response.getResponsesList();
+
+			  for (AnnotateImageResponse imageResponse : responses) 
+			  {
+				  if (imageResponse.hasError()) 
+				  {
+					  LOG.error(String.format("Error: %s%n", imageResponse.getError().getMessage()));
+	        	
+					  return receiptObjects;
+				  }
+				  // For full list of available annotations, see http://g.co/cloud/vision/docs
+				  TextAnnotation receiptAnnotation = imageResponse.getFullTextAnnotation();
+			    	
+				  JsonObject receiptPayload = new OcrResponseParser().buildResponsePayload(
+			    			imageResponse);
+			    	
+				  receiptsPayloadArray.add(receiptPayload);
+			    	
+				  ReceiptDTO receiptObject = this.getOcrParserService().processVisionApiResponse(
+			    			receiptPayload, receiptAnnotation);
+			    	
+				  receiptObjects.add(receiptObject);
+			  }
+	      
+			  return receiptObjects;
+		  }
+		  catch( Exception e )
+		  {
+			  LOG.error(e.getMessage(), e);
+	    	
+			  return receiptObjects;
+		  }
+		  finally
+		  {
+			  if ( client != null )
+			  {
+				  client.close();
+			  }
+		  }
+	  }
+	  // [END vision_fulltext_detection_gcs]	
+	
+	  /**
+	   * Performs document text detection on a remote image on Google Cloud Storage.
+	   *
+	   * @param gcsSourcePath The path to the remote file on Google Cloud Storage to detect document text on.
+	   * @throws Exception on errors while closing the client.
+	   * @throws IOException on Input/Output errors.
+	   */
+	  // [START vision_fulltext_detection_gcs]
+	  @GetMapping("/detectImageTextGcsExt")
+	  public List<String> detectImageTextGcsExt(String gcsSourcePath, HttpServletRequest webRequest) throws IOException 
 	  {
 		  /*
 	    List<AnnotateImageRequest> requests = new ArrayList<>();
@@ -418,7 +500,7 @@ public class VisionControllerImage
 		  // the "close" method on the client to safely clean up any remaining background resources.
 		  try
 		  {
-			  ImageSource imgSource = ImageSource.newBuilder().setGcsImageUri(gcsPath).build();
+			  ImageSource imgSource = ImageSource.newBuilder().setGcsImageUri(gcsSourcePath).build();
 	    	
 			  Image img = Image.newBuilder().setSource(imgSource).build();
 	    	
@@ -498,7 +580,105 @@ public class VisionControllerImage
 			  }
 		  }
 	  }
-	  // [END vision_fulltext_detection_gcs]
+	  // [END vision_localize_objects_gcs]
+	
+	  /**
+	   * This method downloads an image from a URL and sends its contents to the Vision API for label
+	   * detection.
+	   *
+	   * @param imageUrl the URL of the image
+	   * @param map the model map to use
+	   * @return a string with the list of labels and percentage of certainty
+	   */
+	  @GetMapping("/detectImageTextByUrl")
+	  public List<ReceiptDTO> detectImageTextByUrl(String imageUrl) 
+	  {
+		  List<ReceiptDTO> receiptObjects = new LinkedList<ReceiptDTO>();
+		  
+		  try 
+		  {
+				// ---
+				JsonObject receiptsPayload = new JsonObject();
+				JsonArray receiptsPayloadArray = new JsonArray();
+				receiptsPayload.add("results", receiptsPayloadArray);
+	
+				JsonObject pathObject = new JsonObject();
+				pathObject.addProperty("sourcePath", imageUrl);
+				//pathObject.addProperty("gcsDestinationPath", gcsDestinationPath.uriString());
+				receiptsPayload.add("file", pathObject);
+				  
+				// [START spring_vision_image_labelling]
+				AnnotateImageResponse imageResponse = this.cloudVisionTemplate
+						.analyzeImage(this.resourceLoader.getResource(imageUrl), Type.DOCUMENT_TEXT_DETECTION);
+	
+				TextAnnotation receiptAnnotation = imageResponse.getFullTextAnnotation();
+		    	
+		    	JsonObject receiptPayload = new OcrResponseParser().buildResponsePayload(
+		    			imageResponse);
+		    	
+		    	receiptsPayloadArray.add(receiptPayload);
+		    	
+		    	ReceiptDTO receiptObject = this.getOcrParserService().processVisionApiResponse(
+		    			receiptPayload, receiptAnnotation);
+		    	
+		    	receiptObjects.add(receiptObject);
+				
+				return receiptObjects;
+		  } 
+		  catch (Exception e) 
+		  {
+				LOG.error(e.getMessage(), e);
+	
+				return receiptObjects;
+		  }
+	  }
+	  
+	  /**
+	   * This method downloads an image from a URL and sends its contents to the Vision API for label
+	   * detection.
+	   *
+	   * @param imageUrl the URL of the image
+	   * @param map the model map to use
+	   * @return a string with the list of labels and percentage of certainty
+	   */
+	  @GetMapping("/detectImageTextByUrlExt")
+	  public ModelAndView detectImageTextByUrlExt(String imageUrl, ModelMap map) 
+	  {
+		  	try 
+		    {  
+			    // [START spring_vision_image_labelling]
+			    AnnotateImageResponse response =
+			        this.cloudVisionTemplate.analyzeImage(
+			            this.resourceLoader.getResource(imageUrl), Type.DOCUMENT_TEXT_DETECTION);
+			
+			    Map<String, Float> imageText =
+			        response
+			            .getLabelAnnotationsList()
+			            .stream()
+			            .collect(
+			                Collectors.toMap(
+			                    EntityAnnotation::getDescription,
+			                    EntityAnnotation::getScore,
+			                    (u, v) -> {
+			                      throw new IllegalStateException(String.format("Duplicate key %s", u));
+			                    },
+			                    LinkedHashMap::new));
+			    // [END spring_vision_image_labelling]
+			
+			    map.addAttribute("annotations", imageText);
+			    map.addAttribute("imageUrl", imageUrl);
+			
+			    return new ModelAndView("result", map);
+		    }
+		  	catch( Exception e )
+		    {
+		    	LOG.error(e.getMessage(), e);
+		    	
+		    	return new ModelAndView("result", map);
+		    }
+	  }
+
+	// [END vision_fulltext_detection_gcs]
 	  
 	  // [START vision_localize_objects]
 	  /**
@@ -596,5 +776,4 @@ public class VisionControllerImage
 	      }
 	    }
 	  }
-	  // [END vision_localize_objects_gcs]
 }
