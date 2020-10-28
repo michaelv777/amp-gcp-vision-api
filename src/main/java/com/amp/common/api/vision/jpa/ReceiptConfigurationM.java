@@ -22,7 +22,7 @@ public class ReceiptConfigurationM implements Serializable {
 
 	@Id
 	@Column(unique=true, nullable=false)
-	private String receiptconfigurationid;
+	private long receiptconfigurationid;
 	
 	@Column(name = "RECEIPTCONFIGURATION", columnDefinition = "json", nullable=false)
 	private String receiptconfiguration;
@@ -35,11 +35,11 @@ public class ReceiptConfigurationM implements Serializable {
 	public ReceiptConfigurationM() {
 	}
 
-	public String getReceiptconfigurationid() {
+	public long getReceiptconfigurationid() {
 		return this.receiptconfigurationid;
 	}
 
-	public void setReceiptconfigurationid(String receiptconfigurationid) {
+	public void setReceiptconfigurationid(long receiptconfigurationid) {
 		this.receiptconfigurationid = receiptconfigurationid;
 	}
 

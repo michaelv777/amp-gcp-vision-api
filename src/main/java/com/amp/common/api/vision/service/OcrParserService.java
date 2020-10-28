@@ -156,8 +156,6 @@ public class OcrParserService
 		catch( Exception ex )
 		{
 			LOG.error(ex.getMessage(), ex);
-			
-			LOG.error(ex.getMessage(), ex);
         	
             if (tx != null)
             {

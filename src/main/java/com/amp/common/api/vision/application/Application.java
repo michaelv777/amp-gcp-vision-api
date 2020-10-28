@@ -37,7 +37,8 @@ public class Application extends SpringBootServletInitializer
 	
 	@Configuration
     //@Profile({ "default", "production" })
-    @PropertySource("classpath:" + VisionApiConstants.PROPERTY_FILE_NAME)
+    @PropertySource("classpath:" + VisionApiConstants.PROPERTY_FILE_NAME1)
+	@PropertySource("classpath:" + VisionApiConstants.PROPERTY_FILE_NAME2)
 	static class ProductionConfiguration 
 	{
         

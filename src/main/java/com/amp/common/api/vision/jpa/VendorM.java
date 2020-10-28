@@ -17,7 +17,7 @@ public class VendorM implements Serializable {
 
 	@Id
 	@Column(unique=true, nullable=false)
-	private String vendorid;
+	private long vendorid;
 
 	@Column(nullable=false, length=1000)
 	private String description;
@@ -32,11 +32,11 @@ public class VendorM implements Serializable {
 	public VendorM() {
 	}
 
-	public String getVendorid() {
+	public long getVendorid() {
 		return this.vendorid;
 	}
 
-	public void setVendorid(String vendorid) {
+	public void setVendorid(long vendorid) {
 		this.vendorid = vendorid;
 	}
 

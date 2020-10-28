@@ -5,7 +5,9 @@ import java.util.Set;
 
 public class VisionApiConstants 
 {
-    public static final String PROPERTY_FILE_NAME = "amp-vision-api.properties";
+    public static final String PROPERTY_FILE_NAME1 = "amp-vision-api.properties";
+    
+    public static final String PROPERTY_FILE_NAME2 = "application.properties";
     
     public static final String BUCKET_INPUT_FOLDER = "input";
     
