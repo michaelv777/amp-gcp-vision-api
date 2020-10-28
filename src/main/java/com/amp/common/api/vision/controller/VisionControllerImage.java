@@ -73,14 +73,6 @@ public class VisionControllerImage extends VisionControllerBase
 {
 	private final static Logger LOG = 
 			LoggerFactory.getLogger(VisionControllerImage.class);
-	
-	//@Autowired private ResourceLoader resourceLoader;
-
-	// [START spring_vision_autowire]
-	//@Autowired private CloudVisionTemplate cloudVisionTemplate;
-	  // [END spring_vision_autowire]
-	
-	//@Autowired private OcrParserService ocrParserService;
 
 	/**
 	   * This method downloads an image from a URL and sends its contents to the Vision API for label
@@ -610,7 +602,7 @@ public class VisionControllerImage extends VisionControllerBase
 				// [START spring_vision_image_labelling]
 				AnnotateImageResponse imageResponse = this.cloudVisionTemplate
 						.analyzeImage(this.resourceLoader.getResource(imageUrl), Type.DOCUMENT_TEXT_DETECTION);
-	
+				
 				TextAnnotation receiptAnnotation = imageResponse.getFullTextAnnotation();
 		    	
 		    	JsonObject receiptPayload = new OcrResponseParser().buildResponsePayload(
