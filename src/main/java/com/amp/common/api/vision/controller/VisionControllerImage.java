@@ -596,7 +596,7 @@ public class VisionControllerImage extends VisionControllerBase
 	
 				JsonObject pathObject = new JsonObject();
 				pathObject.addProperty("sourcePath", imageUrl);
-				//pathObject.addProperty("gcsDestinationPath", gcsDestinationPath.uriString());
+				
 				receiptsPayload.add("file", pathObject);
 				  
 				// [START spring_vision_image_labelling]
