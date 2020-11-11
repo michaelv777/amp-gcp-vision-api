@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +56,7 @@ public abstract class AbstractParser implements IReceiptDataParser
         	
         	if ( data.size() >= 1)
 	        {
-        		value = (String)data.get(0);
+        		value = ((String)data.get(0)).trim();
 	        }
         	
         	LOGGER.debug(value.toString());
@@ -101,6 +102,11 @@ public abstract class AbstractParser implements IReceiptDataParser
 					configurationItem.getMatch(), 
 					configurationItem.getGroup(),
 					flags);
+	        
+	        if ( StringUtils.isNotEmpty(value))
+	        {
+	        	value = value.trim();
+	        }
 		}
 		catch( Exception e )
 		{
@@ -142,6 +148,14 @@ public abstract class AbstractParser implements IReceiptDataParser
 					configurationItem.getValue(), 
 					configurationItem.getGroup(),
 					flags);
+	        
+	        for ( String value : values )
+	        {
+		        if ( StringUtils.isNotEmpty(value))
+		        {
+		        	value = value.trim();
+		        }
+	        }
 		}
 		catch( Exception e )
 		{
@@ -179,6 +193,11 @@ public abstract class AbstractParser implements IReceiptDataParser
         	if ( data.size() >= 1)
 	        {
         		String valueStr = (String)data.get(0);
+        		
+        		if ( StringUtils.isNotEmpty(valueStr))
+    	        {
+    				valueStr = valueStr.trim().replace(StringUtils.SPACE, StringUtils.EMPTY);
+    	        }
         		
         		if ( NumberUtils.isCreatable(valueStr) )
         		{
@@ -231,7 +250,12 @@ public abstract class AbstractParser implements IReceiptDataParser
 					configurationItem.getValue(), 
 					configurationItem.getMatch(), 
 					configurationItem.getGroup());
-					
+			
+	        if ( StringUtils.isNotEmpty(valueStr))
+	        {
+				valueStr = valueStr.trim().replace(StringUtils.SPACE, StringUtils.EMPTY);
+	        }
+	        
 			if ( NumberUtils.isCreatable(valueStr) )
     		{
     			value = new BigDecimal(valueStr);
